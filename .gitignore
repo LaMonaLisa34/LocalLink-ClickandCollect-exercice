@@ -15,6 +15,7 @@
 /public/media/cache/
 ###< liip/imagine-bundle ###
 
+/public/robot.txt
 /public/uploads/
 
 ### LexikJWTAuthenticationBundle ###
