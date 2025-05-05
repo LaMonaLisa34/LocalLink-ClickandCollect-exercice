@@ -1,0 +1,21 @@
+# Configuration principale de Symfony
+framework:
+    secret: '%env(APP_SECRET)%'
+
+    # Configuration des sessions
+    session:
+        enabled: true
+        handler_id: null  # Utilise les sessions PHP natives (stockage par défaut)
+        cookie_secure: false  # Active Secure si HTTPS est détecté
+        cookie_samesite: lax  # Assure la compatibilité avec les navigateurs modernes
+
+    # Autres configurations (garde celles dont tu as besoin)
+    #esi: true
+    #fragments: true
+
+# Configuration spécifique pour les tests
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

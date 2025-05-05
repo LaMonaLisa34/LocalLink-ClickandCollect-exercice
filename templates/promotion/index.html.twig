@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Promotions
+{% endblock %}
+
+{% block body %}
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+				<p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+				<div class="mt-2 text-sm">
+					{{ message|raw }}
+				</div>
+				<button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+					&times;
+				</button>
+			</div>
+			<script>
+				setTimeout(function () {
+let alert = document.getElementById('flash-message-{{ loop.index }}');
+if (alert) {
+alert.remove();
+}
+}, 1500);
+			</script>
+		{% endfor %}
+	{% endfor %}
+
+	<div class="grid gap-x-8 gap-y-2 md:mx-5 md:mx-20 lg:mx-52">
+
+		<div></div>
+		<div>
+			<p class="font-semibold text-3xl text-center md:text-left">Promotions</p>
+		</div>
+		<div></div>
+
+		<div></div>
+		<div class="md:ml-5">
+			<h3 class="font-semibold text-2xl text-center md:text-left">Promotions en cours</h3>
+			<ul>
+				{% if currentPromotionsData|length > 0 %}
+					{% for promotion in currentPromotionsData %}
+						<li class="mb-5 md:mb-2">
+							<div class="border-b flex flex-col mx-2 md:mx-0 md:ml-5 border rounded-lg my-2">
+								<div class="grid grid-cols-1 md:grid-cols-6 gap-y-2 md:gap-y-0 flex items-center">
+									<div class="p-1">
+										{% set imagePath = 'uploads/' ~ promotion.busiNameFile ~ '/promotionPhoto/' ~ promotion.promotionPhoto %}
+										<img src="{{ imagePath | imagine_filter('small') }}" alt="Photo de la promotion" class="w-full h-32 border border-black object-cover rounded-lg">
+									</div>
+									<div class="ml-3 md:ml-5 mt-2 md:mt-0">
+										<p class="text-lg font-semibold">{{promotion.name}}</p>
+										<p class="text-gray-800 text-sm italic line-clamp-2">{{promotion.description}}</p>
+									</div>
+									<p class="ml-3 md:ml-10 text-gray-800 text-sm md:text-center md:col-span-2 mt-2 md:mt-0 md:mr-0 mr-2">-
+										{{promotion.reduction}}
+										% sur tous les produits du commerce
+										{{promotion.businessName}}
+										!
+									</p>
+									<div class="flex flex-col ml-3 md:ml-0 md:col-start-6 mt-2 md:mt-0 mb-2 md:mb-0">
+										<span class="text-gray-500 text-xs">Du :
+											{{promotion.beginDate}}</span>
+										<span class="text-gray-500 text-xs">Jusqu'au :
+											{{promotion.endDate}}</span>
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				{% else %}
+					<div class="border-b flex justify-between items-center px-4 py-2 ml-5 bg-gray-100 border rounded-lg my-2">
+						<p>Aucune promotion en cours</p>
+					</div>
+				{% endif %}
+			</ul>
+		</div>
+		<div></div>
+
+		<div></div>
+		<div class="md:ml-5">
+			<h3 class="font-semibold text-2xl text-center md:text-left">Promotions à venir</h3>
+			<ul>
+				{% if promotionsToComeData|length > 0 %}
+					{% for promotion in promotionsToComeData %}
+						<li class="mb-5 md:mb-2">
+							<div class="border-b flex flex-col mx-2 md:mx-0 md:ml-5 border rounded-lg  my-2">
+								<div class="grid grid-cols-1 md:grid-cols-6 gap-y-2 md:gap-y-0 flex items-center">
+									<div class="p-1">
+										{% set imagePath = 'uploads/' ~ promotion.busiNameFile ~ '/promotionPhoto/' ~ promotion.promotionPhoto %}
+										<img src="{{ imagePath | imagine_filter('small') }}" alt="Photo de la promotion" class="w-full h-32 border border-black object-cover rounded-lg">
+									</div>
+									<div class="ml-3 md:ml-5 mt-2 md:mt-0">
+										<p class="text-lg font-semibold">{{promotion.name}}</p>
+										<p class="text-gray-800 text-sm italic line-clamp-2">{{promotion.description}}</p>
+									</div>
+									<p class="ml-3 md:ml-10 text-gray-800 text-sm md:text-center md:col-span-2 mt-2 md:mt-0 md:mr-0 mr-2">-
+										{{promotion.reduction}}
+										% sur tous les produits du commerce
+										{{promotion.businessName}}
+										!
+									</p>
+									<div class="flex flex-col ml-3 md:ml-0 md:col-start-6 mt-2 md:mt-0 mb-2 md:mb-0">
+										<span class="text-gray-500 text-xs">Du :
+											{{promotion.beginDate}}</span>
+										<span class="text-gray-500 text-xs">Jusqu'au :
+											{{promotion.endDate}}</span>
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				{% else %}
+					<div class="border-b flex justify-between items-center px-4 py-2 mx-2 md:mx-0 md:ml-5 bg-gray-100 border rounded-lg my-2">
+						<p>Aucune promotion à venir</p>
+					</div>
+				{% endif %}
+			</ul>
+		</div>
+		<div></div>
+
+
+		<div></div>
+		<div class="md:ml-5">
+			<h3 class="font-semibold text-2xl text-center md:text-left">Promotions passées</h3>
+			<ul>
+				{% if previousPromotionsData|length > 0 %}
+
+					{% for promotion in previousPromotionsData %}
+						<li class="mb-5 md:mb-2">
+							<div class="border-b flex flex-col mx-2 md:mx-0 md:ml-5 border rounded-lg bg-gray-200 my-2">
+								<div class="grid grid-cols-1 md:grid-cols-6 gap-y-2 md:gap-y-0 flex items-center">
+									<div class="p-1">
+										{% set imagePath = 'uploads/' ~ promotion.busiNameFile ~ '/promotionPhoto/' ~ promotion.promotionPhoto %}
+										<img src="{{ imagePath | imagine_filter('small') }}" alt="Photo de la promotion" class="w-full h-32 border border-black object-cover rounded-lg grayscale">
+									</div>
+									<div class="ml-3 md:ml-5 mt-2 md:mt-0">
+										<p class="text-lg font-semibold">{{promotion.name}}</p>
+										<p class="text-gray-800 text-sm italic line-clamp-2">{{promotion.description}}</p>
+									</div>
+									<p class="ml-3 md:ml-10 text-gray-800 text-sm md:text-center md:col-span-2 mt-2 md:mt-0 md:mr-0 mr-2">-
+										{{promotion.reduction}}
+										% sur tous les produits du commerce
+										{{promotion.businessName}}
+										!
+									</p>
+									<div class="flex flex-col ml-3 md:ml-0 md:col-start-6 mt-2 md:mt-0 mb-2 md:mb-0">
+										<span class="text-gray-500 text-xs">Du :
+											{{promotion.beginDate}}</span>
+										<span class="text-gray-500 text-xs">Jusqu'au :
+											{{promotion.endDate}}</span>
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				{% else %}
+					<div class="border-b flex justify-between items-center px-4 py-2 mx-2 md:mx-0 md:ml-5 bg-gray-100 border rounded-lg my-2">
+						<p>Aucune promotion passées</p>
+					</div>
+				{% endif %}
+			</ul>
+		</div>
+		<div></div>
+
+		{# <div></div>
+						<div class="ml-5">
+							<h3 class="font-semibold text-2xl">Evenements passés</h3>
+							<ul>
+								{% if previousEventsData|length > 0 %}
+									{% for event in previousEventsData %}
+										<li class="">
+											<div class="border-b flex flex-col px-4 py-2 ml-5 border rounded-lg bg-gray-200 my-2">
+												<p class="text-lg">{{event.name}}</p>
+												<p class="text-gray-800 text-sm">{{event.description}}</p>
+												<span class="text-gray-500 text-xs">{{event.beginDate}}</span>
+												<span class="text-gray-500 text-xs">{{event.endDate}}</span>
+											</div>
+										</li>
+									{% endfor %}
+								{% else %}
+									<div class="border-b flex justify-between items-center px-4 py-2 ml-5 bg-gray-100 border rounded-lg my-2">
+										<p>Aucun évènements passés</p>
+									</div>
+								{% endif %}
+							</ul>
+						</div>
+						<div></div> #}
+
+	</div>
+</div>{% endblock %}

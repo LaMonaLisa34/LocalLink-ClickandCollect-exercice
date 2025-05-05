@@ -1,0 +1,17 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+    
+index:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template: base.html.twig
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+api_login_check:
+    path: /api/login_check

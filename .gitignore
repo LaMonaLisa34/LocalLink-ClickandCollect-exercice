@@ -1,0 +1,45 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/var/
+/vendor/
+/public/bundles/
+/public/.htaccess
+/.htpasswd
+###< symfony/framework-bundle ###
+
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
+
+/public/uploads/
+
+### LexikJWTAuthenticationBundle ###
+/config/jwt/private.pem
+/config/jwt/public.pem
+/config/jwt/*.pem
+
+### API Platform / Mercure ###
+/public/mercure.jwt
+
+# Logs d'application Symfony
+/var/log/
+
+# Fichiers de test ou IDE
+/tests/
+/phpunit.xml
+/phpunit.xml.dist
+
+# Cache et configuration spécifique de PhpStorm / VS Code
+.idea/
+/.vscode/
+
+# Fichiers temporaires
+*.log
+*.lock
+*.DS_Store
+
+# Cache de Doctrine
+.cache/

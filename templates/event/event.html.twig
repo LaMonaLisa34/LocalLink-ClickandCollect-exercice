@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evenements
+{% endblock %}
+
+{% block body %}
+
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+				<p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+				<div class="mt-2 text-sm">
+					{{ message|raw }}
+				</div>
+				<button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+					&times;
+				</button>
+			</div>
+			<script>
+				setTimeout(function () {
+let alert = document.getElementById('flash-message-{{ loop.index }}');
+if (alert) {
+alert.remove();
+}
+}, 1500);
+			</script>
+		{% endfor %}
+	{% endfor %}
+
+	<div class="grid gap-x-8 gap-y-2 mx-2 md:mx-20 lg:mx-52">
+
+		<div></div>
+		<div>
+			<p class="font-semibold text-3xl text-center md:text-left">Evènements</p>
+		</div>
+		<div></div>
+
+		<div></div>
+		<div class="ml-2 md:ml-5">
+			<h3 class="font-semibold text-2xl">Evènements en cours</h3>
+			<ul>
+				{% if currentEventsData|length > 0 %}
+					{% for event in currentEventsData %}
+						<li class="">
+							<a href="/home/business/{{event.businessId}}" class="border-b flex flex-col px-4 py-2 ml-2 md:ml-5 border rounded-lg my-2 hover:bg-gray-100 active:bg-gray-300">
+								<p class="text-lg">{{event.name}}</p>
+								<p class="text-gray-800 text-sm">{{event.description}}</p>
+								<span class="text-gray-500 text-xs">Du :
+									{{event.beginDate}}</span>
+								<span class="text-gray-500 text-xs">Jusqu'au :
+									{{event.endDate}}</span>
+							</a>
+						</li>
+					{% endfor %}
+				{% else %}
+					<div class="border-b flex justify-between items-center px-4 py-2 ml-2 md:ml-5 bg-gray-100 border rounded-lg my-2">
+						<p>Aucun évènement en cours</p>
+					</div>
+				{% endif %}
+			</ul>
+
+		</div>
+		<div></div>
+
+		<div></div>
+		<div class="ml-2 md:ml-5">
+			<h3 class="font-semibold text-2xl">Evènement à venir</h3>
+			<ul>
+				{% if eventsToComeData|length > 0 %}
+					{% for event in eventsToComeData %}
+						<li class="">
+							<a href="/home/business/{{event.businessId}}" class="border-b flex flex-col px-4 py-2 ml-2 md:ml-5 border rounded-lg my-2 hover:bg-gray-100 active:bg-gray-300">
+								<p class="text-lg">{{event.name}}</p>
+								<p class="text-gray-800 text-sm">{{event.description}}</p>
+								<span class="text-gray-500 text-xs">{{event.beginDate}}</span>
+								<span class="text-gray-500 text-xs">{{event.endDate}}</span>
+							</a>
+						</li>
+					{% endfor %}
+				{% else %}
+					<div class="border-b flex justify-between items-center px-4 py-2 ml-2 md:ml-5 bg-gray-100 border rounded-lg my-2">
+						<p>Aucun évènement à venir</p>
+					</div>
+				{% endif %}
+			</ul>
+		</div>
+		<div></div>
+
+
+		<div></div>
+		<div class="ml-2 md:ml-5">
+			<h3 class="font-semibold text-2xl">Evènements passés</h3>
+			<ul>
+				{% if previousEventsData|length > 0 %}
+					{% for event in previousEventsData %}
+						<li class="">
+							<div class="border-b flex flex-col px-4 py-2 ml-2 md:ml-5 border rounded-lg bg-gray-200 my-2">
+								<p class="text-lg">{{event.name}}</p>
+								<p class="text-gray-800 text-sm">{{event.description}}</p>
+								<span class="text-gray-500 text-xs">{{event.beginDate}}</span>
+								<span class="text-gray-500 text-xs">{{event.endDate}}</span>
+							</div>
+						</li>
+					{% endfor %}
+				{% else %}
+					<div class="border-b flex justify-between items-center px-4 py-2 ml-2 md:ml-5 bg-gray-100 border rounded-lg my-2">
+						<p>Aucun évènement passé</p>
+					</div>
+				{% endif %}
+			</ul>
+		</div>
+		<div></div>
+
+	</div>
+</div>{% endblock %}

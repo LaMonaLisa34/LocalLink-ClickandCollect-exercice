@@ -1,0 +1,239 @@
+{% extends 'base.html.twig' %}
+{% block title %}Local Link - Accueil
+{% endblock %}
+
+
+{% block body %}
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+				<p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+				<div class="mt-2 text-sm">
+					{{ message|raw }}
+				</div>
+				<button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+					&times;
+				</button>
+			</div>
+			<script>
+				setTimeout(function () {
+let alert = document.getElementById('flash-message-           {{ loop.index }}');
+if (alert) {
+alert.remove();
+}
+}, 1500);
+			</script>
+		{% endfor %}
+	{% endfor %}
+
+
+	<div class="my-10 mx-0 md:mx-52 xl:mx-96">
+
+		<div>
+			<h1 class="font-semibold text-xl mx-5 md:mx-0 md:text-3xl rounded-lg mb-2 py-2 text-center">Bienvenue sur Local Link</h1>
+		</div>
+
+		{# Carousel #}
+		<div>
+
+			{% if allPromotions|length > 0 %}
+				<p class="font-semibold text-xl mx-5 my-5">Promotion du moment</p>
+				<div
+					class="relative overflow-hidden border-solid border-black mx-5 my-5 w-4/5 mx-auto flex justify-center">
+					<!-- Conteneur des slides -->
+					<div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out">
+
+						{% for business in businessData %}
+							{% if business.promotions|length > 0 %}
+								{% for promotion in business.promotions %}
+									{% if business.business.validated is same as(true) %}
+										<a href="/home/business/{{business.business.id}}" class="flex-none w-full">
+											{% set imagePath = 'uploads/' ~ business.busiNameFile ~ '/promotionPhoto/' ~ promotion.imagePromotion %}
+											<img src="{{ imagePath | imagine_filter('full') }}" class="w-full" alt="Image">
+										</a>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+
+					</div>
+
+					<!-- Boutons de navigation -->
+					<button id="prev-button" class="absolute top-1/2 left-4 bg-teal-700 text-white p-2 rounded-full text-xs md:text-base">
+						<i class="fa-solid fa-angle-left px-2"></i>
+					</button>
+					<button id="next-button" class="absolute top-1/2 right-4 bg-teal-700 text-white p-2 rounded-full text-xs md:text-base">
+						<i class="fa-solid fa-angle-right px-2"></i>
+					</button>
+
+					<!-- Indicateurs -->
+					<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+						{% for business in businessData %}
+							{% if business.promotions|length > 0 %}
+								{% for promotion in business.promotions %}
+									{% if business.business.validated is same as(true) %}
+										<button class="indicator w-3 h-3 bg-gray-300 rounded-full"></button>
+									{% endif %}
+
+								{% endfor %}
+							{% endif %}
+
+						{% endfor %}
+					</div>
+				</div>
+			{% else %}
+
+				<div
+					class="relative overflow-hidden border-solid border-black mx-5 my-5 w-4/5 mx-auto">
+					<!-- Conteneur des slides -->
+					<div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out">
+
+						{% for business in businessData %}
+
+							<div class="flex-none w-full">
+								{% set imagePath = 'uploads/' ~ business.busiNameFile ~ '/' ~ business.photo %}
+								<img src="{{ imagePath | imagine_filter('full') }}" class="w-full" alt="Image">
+							</div>
+
+						{% endfor %}
+
+
+					</div>
+
+					<!-- Boutons de navigation -->
+					<button id="prev-button" class="absolute top-1/2 left-4 bg-teal-700 text-white p-2 rounded-full text-xs md:text-base">
+						Prev
+					</button>
+					<button id="next-button" class="absolute top-1/2 right-4 bg-teal-700 text-white p-2 rounded-full text-xs md:text-base">
+						Next
+					</button>
+
+					<!-- Indicateurs -->
+					<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+						{% for business in businessData %}
+							<button class="indicator w-3 h-3 bg-gray-300 rounded-full"></button>
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+
+		<hr class="h-px my-8 bg-gray-100 border-0 dark:bg-gray-700">
+
+		<div id="map" class="my-10 mx-5 rounded-lg shadow-lg overflow-hidden relative" style="height: 300px;"></div>
+
+		<hr
+		class="h-px my-8 bg-gray-100 border-0 dark:bg-gray-700">
+
+		{# Table #}
+		<div class="my-10">
+			<h2 class="text-xl md:text-2xl mb-2 ml-3 text-center">NOS COMMERCES</h2>
+			<!-- Table Rows -->
+
+			{% for key, category in allBusiness %}
+				<div class="mx-5">
+					<p class="categorie text-sm md:text-xl bg-200 dark:bg-gray-700 p-2 rounded-lg w-1/2 mt-2">
+						{{key}}
+					</p>
+					{% for business in category %}
+						<a href="/home/business/{{business.business.id}}" class="border-b flex items-center mt-2 px-4 py-2 ml-1 md:ml-5 border rounded-lg hover:bg-gray-100 active:bg-gray-300">
+							<div class="flex items-center justify-center w-10 h-10 border rounded-full outline outline-gray-400">
+								{% set imagePath = 'uploads/' ~ business.busiNameFile ~ '/' ~ business.photo %}
+								<img src="{{ imagePath | imagine_filter('xs') }}" class="h-10 w-10 rounded-full" alt="Image">
+							</div>
+							<div class="flex-1 pl-4">
+								<p class="font-semibold text-base md:text-lg">{{ business.business.name }}</p>
+								<p class="text-gray-500 text-xs md:text-sm line-clamp-3">{{ business.business.description }}</p>
+							</div>
+							<p class="text-xs md:text-xl text-black ml-3">
+								{% if business.averageScore > 1 %}
+									<svg class="w-6 h-6 md:w-8 md:h-8 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 22 20">
+										<path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+									</svg>
+									{{ business.averageScore|number_format(0) }}
+									/ 5
+								{% else %}
+									<p>Pas encore noté</p>
+								{% endif %}
+							</p>
+						</a>
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	<script src="{{ asset('js/carousel.js') }}"></script>
+	<script src="{{ asset('js/leaflet.js') }}"></script>
+
+	<script>
+
+		const markers = [{% for entry in businessData %}{
+lat: {{ entry.coordinates[0]|default(0)|raw }},
+lon: {{ entry.coordinates[1]|default(0)|raw }},
+id: {{ entry.business.id }},
+businessName: "{{ entry.business.name }}",
+businessCategory: "{{ entry.businessCategory }}",
+promotion: {{ entry.promotions|length }} > 0 ? true : false,
+openingHour: "{{ entry.todayPlanning.openingHour }}",
+closingHour: "{{ entry.todayPlanning.closingHour }}",
+averageScore: {{ entry.averageScore }}
+},{% endfor %}];
+
+markers.forEach(marker => setMarker(marker.lat, marker.lon, true, marker.id, marker.businessName, marker.businessCategory, marker.promotion, marker.openingHour, marker.closingHour, marker.averageScore));
+
+focusView(placeComedie.lat, placeComedie.lng, zoomLevel);
+	</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Vérifie si le popup a déjà été affiché dans cette session
+        if (!sessionStorage.getItem("popupShown")) {
+            Swal.fire({
+                title: '<h2 style="color: #ffffff; font-weight: bold;">Bienvenue sur notre projet Symfony</h2>',
+                html: `
+                    <div style="text-align: left; font-size: 16px;">
+                        <p style="margin-bottom: 10px;">
+                            Ce site est un projet de groupe développé avec <strong>Symfony et Tailwind CSS</strong>.
+                        </p>
+                        <p style="margin-bottom: 15px;">
+                            Vous êtes invités à le tester.
+                        </p>
+                        <div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; background-color: #ffffff; color: #111827;">
+                            <p style="margin-bottom: 5px; font-weight: bold;">Accès administrateur :</p>
+                            <p>Email : <code style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px; display: inline-block;">admin@test.com</code></p>
+                            <p>Mot de passe : <code style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px; display: inline-block;">1234</code></p>
+                        </div>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#1D4ED8',
+                background: '#2D3748',
+                color: '#E5E7EB',
+            }).then(() => {
+                // Stocke une valeur dans sessionStorage pour empêcher l'affichage multiple
+                sessionStorage.setItem("popupShown", "true");
+            });
+        }
+    });
+
+    // Détecter un hard refresh (CTRL + F5) et réinitialiser le popup
+    window.addEventListener("beforeunload", function (event) {
+        if (event.ctrlKey || event.metaKey) {
+            sessionStorage.removeItem("popupShown");
+        }
+    });
+</script>
+
+
+
+
+
+
+{% endblock %}

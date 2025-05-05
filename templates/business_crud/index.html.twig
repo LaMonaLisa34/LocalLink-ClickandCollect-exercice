@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Business index{% endblock %}
+
+{% block body %}
+    <h1>Business index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Phone_contact</th>
+                <th>Description</th>
+                <th>Statistic</th>
+                <th>Carbon_footprint</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for business in businesses %}
+            <tr>
+                <td>{{ business.id }}</td>
+                <td>{{ business.name }}</td>
+                <td>{{ business.streetNumber }}</td>
+                <td>{{ business.streetName }}</td>
+                <td>{{ business.CityName }}</td>
+                <td>{{ business.phone }}</td>
+                <td>{{ business.description }}</td>
+                <td>{{ business.statistic }}</td>
+                <td>{{ business.footprintCarbon }}</td>
+                <td>
+                    {# <a href="{{ path('app_business_c_r_u_d_show', {'id': business.id}) }}">show</a> #}
+                    <a href="{{ path('app_business_c_r_u_d_edit', {'id': business.id}) }}">edit</a>
+                    <a href="{{ path('app_business_c_r_u_d_delete', {'id': business.id}) }}">delete</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {# <a href="{{ path('app_business_c_r_u_d_new') }}">Create new</a> #}
+{% endblock %}

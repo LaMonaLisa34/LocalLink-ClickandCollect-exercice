@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Local Link - Mon Panier
+{% endblock %}
+
+{% block body %}
+	<div class="mx-2 md:mx-10 mt-10">
+
+		{% if is_granted('ROLE_USER') %}
+
+
+			{% if allBusiness is not empty %}
+				<form id='form' action="/user/{{userId}}/cart/update" method="POST">
+					<h2 class="text-lg font-semibold mb-2 md:mb-4 pl-3">Votre Panier</h2>
+					<div class="p-4 bg-gray-100 rounded-lg">
+						{% for key, cart in allBusiness %}
+
+
+							<h3 class="md:text-xl font-semibold italic mb-3">{{key}}</h3>
+
+							<div class="grid grid-cols-5 md:gap-4 font-bold border-b pb-2 md:ml-5">
+								<p class="text-xs md:text-base">Produit</p>
+								<p class="text-xs md:text-base">Photo</p>
+								<p class="text-xs md:text-base text-center">Quantité</p>
+								<p class="text-xs text-center md:text-base">Prix Unitaire</p>
+								<p class=" text-xs md:text-base text-right">Total</p>
+							</div>
+
+							{% for cart in cart %}
+									<input name="cart[]" value="{{ cart.cartId }}" hidden>
+									<div class="grid grid-cols-5 md:gap-4 items-center border-b py-2 md:ml-5 {% if loop.last %} mb-3 md:mb-10{% endif %}">
+										<div class="flex flex-row">
+											<button type='button' class="bg-red-500  px-1 md:px-2 rounded-lg text-white text-xs md:text-base" onclick="deleteFunction({{userId}}, {{cart.cartId}})">X</button>
+											<p class="ml-2 text-xs md:text-base">{{ cart.product.name }}</p>
+										</div>
+										{% set imagePath = 'uploads/' ~ cart.busiNameFile ~ '/products/' ~ cart.productPhoto %}
+										<img src="{{ imagePath | imagine_filter('small') }}" class="w-10 md:w-32" alt="Image">
+										<div>
+											<input onclick="updatePrices(this, {{cart.product.price}},{{ cart.cartId }})" type="number" min='1' max='{{cart.maxQuantity}}' class="ml-2 text-xs md:text-base flex justify-self-center text-center" value='{{ cart.quantity }}' name="none-{{cart.cartId}}"></input>
+									</div>
+									<p class="ml-2 text-xs md:text-base text-center">{{ cart.product.price }}
+										€</p>
+									<p id='{{ cart.cartId }}' class="multPrice ml-2 font-semibold text-right text-xs md:text-base">{{cart.multPrice}}
+										€</p>
+								</div>
+						{% endfor %}
+					{% endfor %}
+				</div>
+				<div class="mt-5 text-right font-semibold text-base md:text-lg">
+					<p id='total-price'>Total :
+						{{totalPrice}}
+						€</p>
+				</div>
+				<div class="flex flex-row justify-self-end">
+					<button id='save' onclick="sumbit({{userId}})" type="button" class="hidden flex  text-sm md:text-base bg-green-500 text-white mt-2 px-3 py-1 rounded-lg hover:bg-green-600">Sauvegarder le panier</button>
+					<button id='command' type="button" onclick="submitCommand({{userId}})" class="flex ml-5 text-sm md:text-base bg-blue-500 text-white mt-2 px-3 py-1 rounded-lg hover:bg-blue-600">Commander</button>
+				</div>
+				<input type="hidden" name="_token" value="{{ csrf_token('cart_update') }}">
+			</form>
+		{% else %}
+			<div class="border-b flex justify-between items-center px-4 py-2 ml-5 bg-gray-100 border rounded-lg my-2">
+				<p class="text-center text-gray-500">Votre panier est vide.</p>
+			</div>
+		{% endif %}
+
+	{% else %}
+		<div class="flex flex-col items-center">
+			<p class="text-2xl">Vous devez être connecté à un compte pour accéder à votre panier.</p>
+			<a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-50 mt-10">Revenir à l'accueil</a>
+		</div>
+	{% endif %}
+</div>
+
+<script src={{ asset('js/cart.js') }}></script>{% endblock %}

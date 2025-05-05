@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter votre commerce
+{% endblock %}
+
+{% block body %}
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div id="flash-message" class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded relative">
+				<p class="font-bold">{{ label == 'errorAddress' ? 'Une erreur est survenue :' : 'Information :' }}</p>
+				<div class="mt-2 text-sm">
+					{{ message|raw }}
+				</div>
+				<button type="button" onclick="document.getElementById('flash-message').remove()" class="absolute top-2 right-2 text-red-700 hover:text-red-900">
+					&times;
+				</button>
+			</div>
+		{% endfor %}
+	{% endfor %}
+	<div class="max-w-lg mx-auto mt-10 p-6 rounded">
+
+		<h1 class="text-2xl font-bold mb-4">AJOUTER MON COMMERCE</h1>
+
+		{{ form_start(form, {'attr': {'class': 'space-y-10', 'id': 'addFormBusiness'}}) }}
+{{ form_row(form._token) }}
+
+		<!-- Champs Généraux -->
+		{{ form_row(form.name, {'attr': {'class': 'form-input w-full'}}) }}
+		{{ form_row(form.categories, {'attr': {'class': 'form-select w-full'}}) }}
+		{{ form_row(form.streetnumber, {'attr': {'class': 'form-input w-full'}}) }}
+		{{ form_row(form.streetname, {'attr': {'class': 'form-input w-full'}}) }}
+		{{ form_row(form.cityname, {'attr': {'class': 'form-input w-full'}}) }}
+		{{ form_row(form.phone, {'attr': {'class': 'form-input w-full'}}) }}
+		{{ form_row(form.description, {'attr': {'class': 'form-input w-full'}}) }}
+
+		<!-- Champs pour les jours -->
+		<h2 class="font-bold text-lg mt-6">Horaires d'ouverture :</h2>
+		<p>Entrez une horaire ou écrivez "fermé".</p>
+		<div class="space-y-6">
+			{% for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] %}
+				<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+					<div style="flex: 1;">
+						{{ form_label(attribute(form, day ~ '_opening')) }}
+						{{ form_widget(attribute(form, day ~ '_opening'), { 'attr': {'class': 'form-input w-full'} }) }}
+						{{ form_errors(attribute(form, day ~ '_opening')) }}
+					</div>
+					<div style="flex: 1;">
+						{{ form_label(attribute(form, day ~ '_closing')) }}
+						{{ form_widget(attribute(form, day ~ '_closing'), { 'attr': {'class': 'form-input w-full'} }) }}
+						{{ form_errors(attribute(form, day ~ '_closing')) }}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+
+		<div>
+			<h2 class="text-lg text-white font-bold text-gray-800">Télécharger photo ou logo :</h2>
+			<div id='inputPhotos' class="inputPhotos grid grid-cols-2 gap-4 mt-4"></div>
+		</div>
+
+
+		<!-- Bouton pour valider -->
+		<button id="buttonAddBusiness" onclick="checkVoidPhotos()" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mt-6" type="button">Valider mon commerce</button>
+
+
+		{{ form_end(form) }}
+	</div>
+	<script src="{{ asset('js/business.js') }}"></script>
+
+
+{% endblock %}

@@ -1,0 +1,31 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+parameters:
+    uploadsDirectory: '%kernel.project_dir%/public/uploads'
+
+services:
+    # Configuration par défaut des services
+    _defaults:
+        autowire: true      # Injection automatique des dépendances
+        autoconfigure: true # Enregistrement automatique des services (ex: commandes, événements, etc.)
+
+    # Charge toutes les classes de src/ comme services, sauf exclusions
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Configuration spécifique pour les Fixtures Doctrine
+    App\DataFixtures\:
+        resource: '../src/DataFixtures'
+        tags: ['doctrine.fixture.orm']
+
+    # Configuration spécifique pour ton Listener de Déconnexion
+    App\EventListener\LogoutListener:
+        arguments:
+            $logger: '@Psr\Log\LoggerInterface'
+        tags:
+            - { name: kernel.event_listener, event: security.logout, method: onLogout }

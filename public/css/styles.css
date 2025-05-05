@@ -1,0 +1,199 @@
+html{
+    margin: 0;
+    padding: 0;
+}
+
+header{
+    background: rgb(8,8,8);
+    background: linear-gradient(80deg, rgba(8,8,8,1) 0%, rgba(13,96,98,1) 100%);
+    position:sticky;
+}
+
+h1 {
+    background-color: #001E2F;
+    color: white;
+}
+
+h2{
+    background-color: #001E2F;
+    color: white;
+    border-radius: 30px;
+}
+
+.categorie{
+    background-color: #001E2F;
+    color: white;
+    border-radius: 30px;
+}
+
+/*  Formulaire  */
+input{
+    background-color: #001e2f20;
+    border-radius: 5px;
+}
+
+#map{
+    z-index: 0;
+}
+
+
+/* FOOTER */
+footer{
+    background: #113b3d;
+    background: linear-gradient(80deg, rgba(17,59,61,1) 0%, rgba(8,8,8,1) 100%);
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    padding-top: 60px;
+}
+
+#reseaux_sociaux{
+    margin-top:-100px
+}
+
+/* Section copyright et signature */
+#finfooter{
+    background-color: #09090938;
+    margin-top: 50px;
+}
+
+#finfooter p{
+    font-size: 8px;
+}
+
+/* Mode sombre */
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+  }
+  
+body {
+background-color: var(--background-color);
+color: var(--text-color);
+}
+  
+:root.dark-mode {
+    --background-color: #121212;
+    --text-color: #ffffff;
+}
+
+.dark-mode input, 
+.dark-mode textarea, 
+.dark-mode label, 
+.dark-mode form, 
+.dark-mode select {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.dark-mode input {
+    background-color: #5b5858;
+}
+
+.dark-mode input::placeholder, 
+.dark-mode textarea::placeholder {
+  color: #bbbbbb;
+}
+
+/* Conteneur global */
+form.recherche {
+    display: flex;
+    justify-content: center;
+    float: right;
+    margin: 10px auto;
+    max-width: 400px;
+    margin-left: 20px;
+    z-index: 99999;;
+}
+
+/* Wrapper champs */
+form.recherche .flex {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Champ de recherche */
+form.recherche input.form-input {
+    padding: 10px 15px;
+    font-size: 16px;
+    flex: 1;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    background: #f1f1f1;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    height: 40px;
+}
+
+/* Animation focus */
+form.recherche input.form-input:focus {
+    background: #efeeee95;
+    border-color: #2a3583;
+}
+
+/* Bouton de recherche */
+form.recherche button.form-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #043052;
+    color: white;
+    font-size: 16px;
+    border: none;
+    padding: 0 15px;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+    transition: all 0.3s ease-in-out;
+    height: 40px; 
+}
+
+/* Animation au survol */
+form.recherche button.form-button:hover {
+    background: #2a3583;
+    transform: scale(1.05);
+}
+
+/* Icone dans le bouton */
+form.recherche button.form-button i {
+    margin-left: 0;
+    font-size: 18px; 
+    transition: transform 0.3s ease-in-out;
+}
+
+form.recherche button.form-button:hover i {
+    transform: scale(1.2);
+}
+
+.recherche{
+    background-color: #e4e1e1;
+}
+
+.buttonrecherche{
+    color: white;
+}
+
+/* BOUTON PRIMARY */
+.submit {
+    background-color: #FF8F86;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+button:active {
+    transform: scale(0.98);
+  }
+
+/* Message flash */
+#flash{
+    background-color:#4c9c9fc3; 
+    border-radius: 120px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 200;
+}

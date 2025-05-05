@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Business
+{% endblock %}
+
+{% block body %}
+	<div
+		class="max-w-lg mx-auto mt-10 p-6 rounded shadow">
+		{# <p>{{business.phone_contact}}</p> #}
+		<h1 class="text-2xl font-bold mb-4 text-center">Modifier mon commerce</h1>
+		<h2 class="text-1xl font-bold mb-4 text-center">{{business.name|upper}}</h2>
+
+
+		<form id="editFormBusiness" method="POST" action="/business/c/r/u/d/business/editbusiness/updated" class="space-y-10" enctype="multipart/form-data">
+			<input type="hidden" name="_token" value="{{ csrf_token('business.updated') }}">
+
+			<input type="hidden" name="id" value={{business.id}}>
+			<div class="mb-3 flex flex-col">
+				<label for="name-id" class="form-label">Nom</label>
+				<input id="name-id" type="text" name="name" class="form-control" value="{{business.name}}">
+			</div>
+			<div class="mb-3 flex flex-col">
+				<label for="category-id" class="form-label">Catégorie</label>
+				<select name="category" id="category-id">
+					<option value="">--Choisissez une catégorie--</option>
+					{% for category in categories %}
+						<option value="{{category}}">{{category}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="mb-3 flex flex-col">
+				<label for="streetNumber-id" class="form-label">Numéro de rue</label>
+				<input id="streetNumber-id" type="text" name="streetNumber" class="form-control" value="{{business.streetNumber}}">
+			</div>
+			<div class="mb-3 flex flex-col">
+				<label for="streetName-id" class="form-label">Nom de rue</label>
+				<input id="streetName-id" type="text" name="streetName" class="form-control" value="{{business.streetName}}">
+			</div>
+			<div class="mb-3 flex flex-col">
+				<label for="CityName-id" class="form-label">Ville</label>
+				<input id="CityName-id" type="text" name="CityName" class="form-control" value="{{business.CityName}}">
+			</div>
+			<div class="mb-3 flex flex-col">
+				<label for="phone-id" class="form-label">Téléphone</label>
+				<input id="phone-id" type="text" name="phone" class="form-control" value="{{business.phone}}">
+			</div>
+			<div class="mb-3 flex flex-col">
+				<label for="description-id" class="form-label">Description</label>
+				<input id="description-id" type="text" name="description" class="form-control" value="{{business.description}}">
+			</div>
+			<h2 class="font-bold text-lg mt-6 text-center">Horaires d'ouverture :</h2>
+
+			{% for planning in planningWeek %}
+				<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+					<div
+						style="flex: 1;">
+						{# <p class="form-label">{{planning.dayFrench}}</p> #}
+						<label for="openingHour{{planning.day}}-id" class="form-label">{{planning.dayFrench}}
+							- Heure d'ouverture :</label>
+						<input id="openingHour{{planning.day}}-id" type="text" name="{{planning.day}}[opening]" class="form-input w-full" value="{{planning.opening}}">
+					</div>
+					<div style="flex: 1;">
+						<label for="closingHour{{planning.day}}-id" class="form-label">{{planning.dayFrench}}
+							- Heure de fermeture :</label>
+						<input id="closingHour{{planning.day}}-id" type="text" name="{{planning.day}}[closing]" class="form-input w-full" value="{{planning.closing}}">
+					</div>
+					{# <input id="footprintCarbon-id" type="text" name="footprintCarbon" class="form-control" value="{{business.footprintCarbon}}"> #}
+				</div>
+			{% endfor %}
+			<div>
+				<h2 class="text-lg text-white font-bold text-800 text-center">Télécharger photo ou logo :</h2>
+				<div id='inputPhotos' class="inputPhotos grid grid-cols-2 gap-4 mt-4"></div>
+			</div>
+
+			{% if photos|length > 0 %}
+				<div id="{{business.id}}" class="divPhoto mt-4">
+					<span class="block text-sm font-medium text-700">Supprimer une photo :</span>
+					<div class="grid grid-cols-4 gap-4 mt-2">
+						{% for photo in photos %}
+							<div id="divPresPhoto-{{photo.id}}" class="divPresentPhoto-{{business.id}} relative border rounded-lg shadow-sm">
+								<img src="{{ asset('uploads/' ~ busiNameFile ~ '/' ~ photo.photo) }}" alt="Photo du commerce" class="w-full h-32 object-cover rounded-t-lg">
+								<button type="button" id='{{photo.id}}' class="deletePhoto absolute top-0 right-0 bg-red-500 text-white text-xs py-1 px-2 rounded-br-lg hover:bg-red-700" data-id="{{ photo.id }}">
+									&times;
+								</button>
+								<input type="hidden" name="photos[]" value="{{ photo.id }}">
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+
+			<input id="buttonEditBusiness" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 mt-6" onclick="checkVoidPhotos({{business.id}})" type="button" value="Save">
+			<a href="/user/gestionnaire/compte/{{userId}}" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mt-6">Cancel</a>
+		</form>
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div id="flash-message" class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded relative">
+					<p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Information :' }}</p>
+					<div class="mt-2 text-sm">
+						{{ message|raw }}
+					</div>
+					<button type="button" onclick="document.getElementById('flash-message').remove()" class="absolute top-2 right-2 text-red-700 hover:text-red-900">
+						&times;
+					</button>
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+	</div>
+
+	<div class="container mx-auto p-6">
+		<div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+			<h2 class="text-2xl font-bold text-red-600 text-center mb-4">Supprimer mon commerce</h2>
+			<p class="text-gray-700 text-center mb-6">
+				Êtes-vous sûr(e) de vouloir supprimer définitivement votre commerce ?<br>
+				Cette action est irréversible.
+			</p>
+
+
+			<div class="flex justify-center space-x-4">
+				<form id="delete-business-form" method="POST" action="{{ path('app_business_c_r_u_d_delete', {'id': business.id}) }}">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete_business') }}">
+					<button id="delete-business-button" type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+						Oui, supprimer
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="{{ asset('js/business.js') }}"></script>
+	
+{% endblock %}

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}Bienvenue
+			{% endblock %}
+		</title>
+		{# <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> #}
+		<meta name="robots" content="noindex, nofollow">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+		<link rel="icon" href="{{ asset('images/logo/Logo-fondblanc.png') }}" type="image/png">
+		<script src="https://cdn.tailwindcss.com"></script>
+
+		<link rel="stylesheet" href="{{ asset('css/styles.css') }}"> {% block stylesheets %}{% endblock %}{% block javascripts %}{% endblock %}
+		{# Test cdn alerte #}
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	</head>
+
+
+	<header class="bg-blue-600 text-white sticky top-0 z-50 shadow-md">
+		<div
+			class="container mx-auto flex items-center justify-between py-4 px-6">
+			<!-- Logo et Titre -->
+			<a href="/" class="flex items-center space-x-4">
+				<img src="{{ asset('images/logo/Logo-fondblanc.png') }}" alt="Logo-Local-Link" class="h-16">
+				<h1 class="text-2xl font-bold tracking-wide">LOCAL LINK</h1>
+			</a>
+
+			<!-- Bouton Mobile -->
+			<button id="mobile-menu-toggle" class="md:hidden text-white hover:text-gray-300 focus:outline-none">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+				</svg>
+			</button>
+
+			<!-- Menu Desktop -->
+			<nav class="hidden md:flex items-center space-x-5">
+				<a href="/" class="text-sm font-medium hover:text-gray-300 transition">Home</a>
+				<a href="/event" class="text-sm font-medium hover:text-gray-300 transition">Événements</a>
+				<a href="/promotion" class="text-sm font-medium hover:text-gray-300 transition">Promotions</a>
+
+				{% if is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_BUSI') %}
+					<!-- Si user connecté -->
+					<a href="{{ path('app_gestionnaire_compte', { 'userId': app.user.id }) }}" class="text-sm font-medium hover:text-gray-300 transition">
+						Mon espace
+					</a>
+					<a href="{{ path('app_cart', { 'userId': app.user.id }) }}" class="text-sm font-medium hover:text-gray-300 transition">
+						Mon Panier
+						<i class="fas fa-shopping-cart"></i>
+					</a>
+				{% else %}
+					<!-- Si user pas connecté -->
+					<a href="{{ path('app_login') }}" class="text-sm font-medium hover:text-gray-300 transition">
+						Connexion
+					</a>
+					<a href="{{ path('app_register') }}" class="text-sm font-medium hover:text-gray-300 transition">
+						Inscription
+					</a>
+				{% endif %}
+			</nav>
+
+
+			<!-- Barre de recherche et thème sombre -->
+			<div
+				class="hidden md:flex items-center space-x-4">
+				<!-- Formulaire de recherche -->
+				<form class="flex" action="{{ path('app_search') }}" method="GET">
+					<input type="text" name="query" placeholder="Rechercher..." class="form-control transition-all duration-300"/>
+					<button type="submit" class="btn transition-all duration-300">
+						<i class="fa fa-search buttonrecherche"></i>
+					</button>
+				</form>
+
+				<!-- Changement de thème -->
+				<button id="theme-switch" class="flex items-center space-x-2">
+					<img src="{{ asset('images/logo/moon.png') }}" alt="Changer de thème" class="h-6"/>
+				</button>
+
+				<!-- Deco -->
+				{% if is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_BUSI') %}
+					<a href="{{ path('app_logout') }}" class="flex items-center space-x-2 text-sm font-medium hover:text-gray-300 transition" id="logout-button">
+						<i class="fas fa-sign-out-alt fa-2x"></i>
+					</a>
+				{% endif %}
+			</div>
+		</div>
+
+		<!-- Menu Mobile -->
+		<div id="mobile-menu" class="hidden md:hidden bg-white text-gray-700 shadow-lg rounded-lg absolute top-16 right-4 w-48">
+			<ul class="flex flex-col space-y-4 py-4 px-6 text-right">
+				<li>
+					<a href="{{ path('app_homepage') }}" class="text-sm font-medium hover:text-blue-600">Home</a>
+				</li>
+				<li>
+					<a href="{{ path('app_event') }}" class="text-sm font-medium hover:text-blue-600">Événements</a>
+				</li>
+				<li>
+					<a href="/promotion" class="text-sm font-medium hover:text-gray-300 transition">Promotions</a>
+
+				</li>
+
+				{% if is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_BUSI') %}
+					<li>
+						<a href="{{ path('app_gestionnaire_compte', {'userId': app.user.id}) }}" class="text-sm font-medium hover:text-blue-600">Mon espace</a>
+					</li>
+					<li>
+						<a href="{{ path('app_cart', { 'userId': app.user.id }) }}" class="text-sm font-medium hover:text-blue-600">Mon Panier</a>
+					</li>
+
+					<li>
+						<a href="#" id="logout-mobile" class="text-sm font-medium hover:text-red-600">
+							Déconnexion</a>
+					</li>
+				{% else %}
+					<li>
+						<a href="{{ path('app_login') }}" class="text-sm font-medium hover:text-blue-600">Connexion</a>
+					</li>
+					<li>
+						<a href="{{ path('app_register') }}" class="text-sm font-medium hover:text-blue-600">Inscription</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	</header>
+
+
+	<body>
+		{% block body %}{% endblock %}
+		
+	</body>
+
+	<footer class="bg-gray-800 text-white py-6">
+		<div
+			class="container mx-auto px-4">
+			<!-- Grille principale -->
+			<div
+				class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left sm:text-sm sm:leading-tight">
+				<!-- Plan du site -->
+				<div class="md:justify-self-start">
+					<h4 class="font-semibold text-lg mb-4 sm:mb-2 sm:text-base">Plan du site :</h4>
+					<ul class="space-y-2 sm:space-y-1">
+						<li>
+							<a href="/" class="hover:underline">Accueil</a>
+						</li>
+						<li>
+							<a href="/register" class="hover:underline">Inscription</a>
+						</li>
+						<li>
+							<a href="/login" class="hover:underline">Connexion</a>
+						</li>
+						{% if is_granted('ROLE_ADMIN') %}
+							<li>
+								<a href="/admin" class="hover:underline">Administration</a>
+							</li>
+						{% endif %}
+						<li>
+							<a href="/event" class="hover:underline">Événements</a>
+						</li>
+					</ul>
+				</div>
+
+				<!-- Liens utiles -->
+				<div class="justify-self-center">
+					<h4 class="font-semibold text-lg mb-4 sm:mb-2 sm:text-base">Liens utiles :</h4>
+					<ul class="space-y-2 sm:space-y-1">
+						<li>
+							<a href="#faq" class="hover:underline">FAQ</a>
+						</li>
+						<li>
+							<a href="#mentions-legales" class="hover:underline">Mentions légales</a>
+						</li>
+						<li>
+							<a href="#politique-confidentialite" class="hover:underline">Politique de confidentialité</a>
+						</li>
+						<li>
+							<a href="/guide_commerce/GuideCommercant.pdf" class="hover:underline" target="_blank">Guide utilisateur - Commerçant</a>
+						</li>
+
+						<li>
+							<a href="#support" class="hover:underline">Support</a>
+						</li>
+					</ul>
+				</div>
+
+				<!-- Réseaux sociaux -->
+				<div class="md:justify-self-end">
+					<h4 class="font-semibold text-lg mb-4 sm:mb-2 sm:text-base">Suivez-nous :</h4>
+					<div class="flex justify-center md:justify-end space-x-4">
+						<a href="https://www.facebook.com" target="_blank" aria-label="Facebook" class="hover:text-blue-400">
+							<i class="fab fa-facebook fa-lg sm:text-base"></i>
+						</a>
+						<a href="https://www.twitter.com" target="_blank" aria-label="Twitter" class="hover:text-blue-400">
+							<i class="fab fa-twitter fa-lg sm:text-base"></i>
+						</a>
+						<a href="https://www.instagram.com" target="_blank" aria-label="Instagram" class="hover:text-blue-400">
+							<i class="fab fa-instagram fa-lg sm:text-base"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Ligne de séparation -->
+			<div class="border-t border-gray-700 my-6 sm:my-4"></div>
+
+			<!-- Copyright -->
+			<div class="text-center text-sm space-y-2 sm:text-xs sm:leading-tight">
+				<p>© 2025 Local Link. Tous droits réservés.</p>
+				<p>Site web réalisé par : Victoria Ternisien - Andrea Michel - Mona van Willigen</p>
+			</div>
+		</div>
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
+	<script>
+
+		const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+
+mobileMenuToggle.addEventListener('click', () => {
+mobileMenu.classList.toggle('hidden');
+});
+
+// Test mode sombre
+// Vérifie si une préférence existe
+if (localStorage.getItem('theme') === 'dark') {
+document.documentElement.classList.add('dark-mode');
+}
+
+// Switch entre mode sombre et clair
+document.getElementById('theme-switch').addEventListener('click', () => {
+const isDarkMode = document.documentElement.classList.toggle('dark-mode');
+localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+});
+
+// Menu déroulant mobile
+document.addEventListener('DOMContentLoaded', () => {
+const toggleBtn = document.getElementById('toggleAccountMenu');
+const accountMenu = document.getElementById('accountSubmenu');
+
+if (toggleBtn && accountMenu) {
+toggleBtn.addEventListener('mouseover', () => {
+accountMenu.classList.toggle('hidden');
+});
+}
+});
+
+// alert deconnexion
+document.getElementById("logout-button").addEventListener("click", function (event) {
+event.preventDefault();
+
+Swal.fire({
+text: "Êtes-vous sûr de vouloir vous déconnecter ?",
+icon: "warning",
+showCancelButton: true,
+confirmButtonColor: "#d33",
+cancelButtonColor: "#3085d6",
+confirmButtonText: "Oui, me déconnecter",
+cancelButtonText: "Annuler"
+}).then((result) => {
+if (result.isConfirmed) {
+window.location.href = "{{ path('app_logout') }}";
+}
+});
+});
+
+// Flash 
+  document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            document.querySelectorAll(".flash-message").forEach(function(flash) {
+                flash.style.transition = "opacity 0.5s";
+                flash.style.opacity = "0";
+                setTimeout(() => flash.remove(), 500); 
+            });
+        }, 5000); // temps du msg flash 
+    });
+	</script>
+</html>

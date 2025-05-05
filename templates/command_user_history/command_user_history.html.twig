@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique de Commandes
+{% endblock %}
+
+{% block body %}
+	<div class="container mx-auto p-6">
+		<h1 class="text-xl md:text-3xl font-bold mb-6 text-center rounded-lg md:mx-20">Historique de vos commandes</h1>
+
+		{% if userCommand is empty %}
+			<p class="text-center text-gray-500">Aucune commande trouvée.</p>
+		{% else %}
+			<div class="space-y-4 md:mx-52">
+				{% for command in userCommand %}
+					<div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+						<h5 class="text-xl font-semibold mb-2">Commande du
+							{{ command.date }}</h5>
+						<p class="text-green-600 font-bold">Status :
+							{{command.command.status}}</p>
+						<p class="text-gray-600 bold">
+							<strong>Commerce :</strong>
+							{{ command.business.name }}</p>
+						<p class="text-gray-600 bold">
+							<strong>Numéro de commande :</strong>
+							{{ command.commandNumber }}</p>
+
+						<ul class="mt-4 divide-y divide-gray-200">
+							{% for cart in command.cart %}
+								<li class="flex justify-between items-center py-2">
+									<span class="text-gray-700">{{ cart.product.name }}
+										-
+										{{ cart.quantity }}
+										x
+										{{ cart.product.price|number_format(2) }}€</span>
+									<span class="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-lg">{{ (cart.quantity * cart.product.price)|number_format(2) }}€</span>
+								</li>
+							{% endfor %}
+						</ul>
+
+						<p class="mt-4 text-lg text-right font-semibold text-gray-800">Total :
+							<span class="text-green-600">{{ command.cart|reduce((total, cart) => total + (cart.quantity * cart.product.price), 0)|number_format(2) }}€</span>
+							{# reduce permet de réduire une liste à une seule valeur. #}
+						</p>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

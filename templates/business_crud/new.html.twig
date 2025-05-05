@@ -1,0 +1,93 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un Commerce{% endblock %}
+
+{% block body %}
+<div class="wrapper max-w-2xl mx-auto p-6 shadow-md rounded-lg">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+                <p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+                <div class="mt-2 text-sm">{{ message|raw }}</div>
+                <button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">&times;</button>
+            </div>
+            <script>
+                setTimeout(() => {
+                    let alert = document.getElementById('flash-message-{{ loop.index }}');
+                    if (alert) alert.remove();
+                }, 3000);
+            </script>
+        {% endfor %}
+    {% endfor %}
+
+    <h1 class="text-2xl font-bold mb-6 text-center">Ajouter mon commerce</h1>
+    
+    <form id="addFormBusiness" class="space-y-6" method="POST" action="/user/businessAdded" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="{{ csrf_token('added_commerce') }}">
+        
+        <div class="flex flex-col">
+            <label for="name-id" class="font-medium">Nom du commerce :</label>
+            <input id="name-id" type="text" name="name" class="border p-2 rounded" value="Mon Commerce Test" required>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="streetNumber-id" class="font-medium">Numéro de rue :</label>
+            <input id="streetNumber-id" type="text" name="streetNumber" class="border p-2 rounded" value="10" required>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="streetName-id" class="font-medium">Nom de la rue :</label>
+            <input id="streetName-id" type="text" name="streetName" class="border p-2 rounded" value="Avenue de la Liberté" required>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="CityName-id" class="font-medium">Ville :</label>
+            <input id="CityName-id" type="text" name="CityName" class="border p-2 rounded" value="Montpellier" required>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="phone-id" class="font-medium">Téléphone :</label>
+            <input id="phone-id" type="text" name="phone" class="border p-2 rounded" value="04 67 89 10 11" required>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="category-id" class="font-medium">Catégorie :</label>
+            <select name="category" id="category-id" class="border p-2 rounded" required>
+                <option value="" disabled selected>--Choisissez une catégorie--</option>
+                {% for category in categories %}
+                    <option value="{{ category.category }}">{{ category.category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="description-id" class="font-medium">Description :</label>
+            <textarea id="description-id" name="description" class="border p-2 rounded" required>Un commerce chaleureux au cœur de la ville.</textarea>
+        </div>
+
+        <h2 class="font-bold text-lg mt-6 text-center">Horaires d'ouverture :</h2>
+       <p class="italic">Les horaires doivent être écrits sous le format "00:00" ou "fermé"</p>
+        {% for day in days %}
+            <div class="flex space-x-4 items-center">
+                <p class="w-24 font-medium">{{ day.dayName }}</p>
+                <label for="openingHour{{ day.dayName }}-id" class="sr-only">Ouverture :</label>
+                <input id="openingHour{{ day.dayName }}-id" type="text" name="openingHour{{ day.dayName }}" class="border p-2 rounded w-24" placeholder="08:00" value="08:00" required>
+                <label for="closingHour{{ day.dayName }}-id" class="sr-only">Fermeture :</label>
+                <input id="closingHour{{ day.dayName }}-id" type="text" name="closingHour{{ day.dayName }}" class="border p-2 rounded w-24" placeholder="18:00" value="18:00" required>
+            </div>
+        {% endfor %}
+
+        				<div>
+					<h2 class="text-lg text-white font-bold text-800 text-center">Télécharger photo ou logo :</h2>
+					<div id='inputPhotos' class="inputPhotos grid grid-cols-2 gap-4 mt-4"></div>
+				</div>
+				<button id="buttonAddBusiness" onclick="checkVoidPhotos()" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mt-6" type="button">Valider mon commerce</button>
+
+				{# <input class="btn btn-success" type="submit" value="Create"> #}
+				<a href="/" class="btn btn-danger">Cancel</a>
+    </form>
+</div>
+
+<script src="{{ asset('js/business.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques de {{ business.name }}{% endblock %}
+
+{% block body %}
+<div class="max-w-lg mx-auto mt-12 p-8 shadow-lg rounded-lg border border-200 mb-20">
+    <h1 class="text-2xl font-semibold text-900 mb-6 text-center uppercase tracking-wide">
+        Statistiques Magasin : </h1>
+
+        <h2 class="text-2xl font-semibold text-900 mb-6 text-center uppercase tracking-wide">{{ business.name|upper }}</h2>
+
+    <!-- Nombre de vues -->
+    <div class="flex justify-between items-center py-4 border-b border-300">
+        <p class="text-lg text-700 font-medium">Nombre de vues</p>
+        <p class="text-2xl font-bold text-900 flex items-center gap-2">
+            <span class="text-700 text-3xl">👁</span> {{ business.statistic }}
+        </p>
+    </div>
+
+    <!-- Empreinte carbone -->
+    {% set footprint = business.getFootprintCarbon() %}
+
+    {% if footprint is null %}
+        {% set category = 'Non évalué' %}
+        {% set color = 'bg-200 text-800' %}
+    {% elseif footprint <= 10 %}
+        {% set category = 'Faible' %}
+        {% set color = 'bg-green-100 text-green-800 border border-green-400' %}
+    {% elseif footprint > 10 and footprint <= 30 %}
+        {% set category = 'Moyenne' %}
+        {% set color = 'bg-yellow-100 text-yellow-800 border border-yellow-400' %}
+    {% elseif footprint > 30 and footprint <= 60 %}
+        {% set category = 'Élevée' %}
+        {% set color = 'bg-orange-100 text-orange-800 border border-orange-400' %}
+    {% else %}
+        {% set category = 'Très élevée' %}
+        {% set color = 'bg-red-100 text-red-800 border border-red-400' %}
+    {% endif %}
+
+    <div class="flex justify-between items-center py-4">
+        <p class="text-lg text-700 font-medium">Empreinte carbone</p>
+        <span class="px-4 py-1 rounded-full text-sm font-semibold {{ color }}">
+            {{ category }}
+            {% if footprint is not null %}
+                ({{ footprint }})
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

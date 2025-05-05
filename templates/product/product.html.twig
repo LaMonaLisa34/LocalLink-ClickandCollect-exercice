@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Magasin
+{% endblock %}
+
+
+{% block body %}
+	<div class="flex flex-row ml-3 md:ml-10 text-sm text-gray-700">
+		<a href="/" class="underline hover:no-underline">Accueil</a>
+		<p class="mx-1">/</p>
+		<a href="/home/business/{{business.id}}" class="underline hover:no-underline">{{business.name}}</a>
+	</div>
+	<div class="m-5 md:p-10 xl:mx-36">
+
+		{% if business.validated is same as(true) %}
+
+			<div class="bg-teal-900 border rounded-lg">
+				<h2 class="ml-3 text-white text-xl md:text-3xl">{{product.name}}</h2>
+			</div>
+			<div
+				class="grid grid-cols-1 grid-row-1 md:grid-cols-2 md:grid-row-3 lg:grid-cols-3 lg:grid-row-3 gap-4 mt-5 flex ">
+
+				{# Carousel #}
+				<div
+					class="relative overflow-hidden border border-solid border-black w-full mx-auto md:col-span-2 md:row-span-3 items-start">
+					<!-- Conteneur des slides -->
+					<div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out">
+						{% for entry in product.photos %}
+							<div class="flex-none w-full">
+								{% set imagePath = 'uploads/' ~ busiNameFile ~ '/products/' ~ entry.photo %}
+								<img
+								src="{{ imagePath | imagine_filter('full') }}" class="w-full" alt="Image">
+							{# <img src="{{ asset('uploads/' ~ business.name ~ '/products/' ~ entry.photo) }}" class="w-full" alt="Image"> #}
+							</div>
+						{% endfor %}
+					</div>
+
+					<!-- Boutons de navigation -->
+					<button id="prev-button" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-teal-700 text-white p-2 rounded-full text-xs md:text-base">
+						Prev
+					</button>
+					<button id="next-button" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-teal-700 text-white p-2 rounded-full text-xs md:text-base">
+						Next
+					</button>
+
+					<!-- Indicateurs -->
+					<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+						{% for entry in product.photos %}
+							<button class="indicator w-3 h-3 bg-gray-300 rounded-full"></button>
+						{% endfor %}
+					</div>
+				</div>
+
+
+				<div class="bg-teal-100 p-3">
+					<div>
+						<p class="md:text-md lg:text-lg">{{product.description}}</p>
+						<div class="flex flex-row my-5 items-center">
+							<div class="text-2xl">
+								{% if productPromotionPrice is same as(0) %}
+									<p class="ml-1 text-xl">{{product.price}}€</p>
+								{% else %}
+									<div class="flex flex-row ">
+										<p class="line-through decoration-red-500 ml-1">{{product.price}}€</p>
+										<p class="text-xl ml-3 text-red-500">
+											{{productPromotionPrice|number_format(2)}}€</p>
+									</div>
+								{% endif %}
+							</div>
+						</div>
+						<p class="md:text-md lg:text-lg mt-3">Quantité restante :
+							{{productQuantity}}</p>
+						{# <p class="ml-3">{{product.stock}}</p> #}
+					</div>
+				</div>
+
+				<div class="justify-items-center">
+					<div
+						class="flex items-center">
+
+						<!-- Étoiles jaunes -->
+						{% if productAverageScore >= 1 %}
+
+							{% if productAverageScore >= 1 %}
+								{% for i in 0..(productAverageScore - 1) %}
+									<svg class="w-8 h-8 lg:w-6 lg:h-6 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 22 20">
+										<path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+									</svg>
+								{% endfor %}
+							{% endif %}
+
+							<!-- Étoiles grises -->
+							{% if productAverageScore < 5 %}
+								{% for i in 0..(4 - productAverageScore) %}
+									<svg class="w-8 h-8 lg:w-6 lg:h-6 text-gray-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 22 20">
+										<path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+									</svg>
+								{% endfor %}
+							{% endif %}
+
+							<p class="ms-2 text-sm font-bold text-gray-900">
+								{% if productAverageScore is not null %}
+									{{ productAverageScore|number_format(0) }}
+									/ 5★
+								{% endif %}
+							{% else %}
+								<p>Pas encore noté</p>
+							{% endif %}
+
+							{% if productAverageScore >= 1  %}
+								<span class="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
+								<a href="/home/{{business.id}}/product/{{product.id}}/review" class="text-sm font-medium text-gray-900 underline hover:no-underline">{{reviewsCount}}
+									avis</a>
+							{% elseif is_granted('ROLE_USER') and not is_granted('ROLE_BUSI') and not is_granted('ROLE_ADMIN') %}
+								<span class="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
+								<a href="/home/{{business.id}}/product/{{product.id}}/review" class="text-sm font-medium text-gray-900 underline hover:no-underline">{{reviewsCount}}
+									avis</a>
+							{% endif %}
+
+					</div>
+					{# <a href="#" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-50 mt-10 flex justify-self-center">Ajouter au panier</a> #}
+					{% if is_granted('ROLE_USER') %}
+						<form action="/user/{{userId}}/cart/{{businessId}}/{{product.id}}/add" method="post" class="mt-4 flex items-center">
+							<input class="rounded p-2 w-16 text-center" type="number" name="quantity" value="1" min="1" max="{{product.quantity}}">
+							<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">Ajouter au panier</button>
+							<input type="hidden" name="_token" value="{{ csrf_token('cart_add') }}">
+						</form>
+					{% else %}
+						<a href="/register" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-50 mt-10 flex justify-self-center">Ajouter au panier</a>
+					{% endif %}
+				</div>
+
+
+			</div>
+		{% else %}
+			<div class="flex flex-col items-center">
+				<p class="text-3xl">Ce produit appartient à un commerce qui n'a pas encore été validé par nos équipes.</p>
+				<a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-50 mt-10">Revenir à l'acceuil</a>
+			</div>
+		{% endif %}
+
+	</div>
+</div></div><script src="{{ asset('js/carousel.js') }}"></script>{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultats de recherche
+{% endblock %}
+
+{% block body %}
+	<div class="max-w-4xl mx-auto mt-10">
+		<h1 class="text-1xl font-bold mb-6 text-center">
+			Résultats pour
+			<span class="italic">"{{ query }}"</span>
+		</h1>
+
+		{% set hasResults = false %}
+		<!-- Veifier si existe résultats -->
+
+		<ul
+			class="space-y-6">
+			<!-- Parcourir les catégories -->
+			{% for item in items %}
+				{% set category = item.category %}
+				{% set businesses = item.businesses %}
+
+				<!-- Afficher les commerces uniquement si la catégorie contient des commerces valides -->
+				{% if businesses|length > 0 %}
+					{% set hasResults = true %}
+					<!-- Résultats trouvés -->
+					<li
+						class="p-6 border rounded-lg shadow-sm">
+						<!-- Nom de la catégorie -->
+						<h2 class="text-lg font-semibold mb-4 text-center">{{ category.category }}</h2>
+						<ul
+							class="space-y-4">
+
+							<!-- Parcourir les commerces -->
+							{% for data in businesses %}
+								{% set business = data.business %}
+								<li class="pb-4 border border-gray-300 rounded-lg bg-gray-100 p-2">
+									<div
+										class="grid grid-cols-1 md:grid-cols-4 md:grid-row-3 gap-x-2">
+										<!-- Photo du commerce -->
+										<div class="md:row-span-3 bg-gray-200 rounded-md overflow-hidden mt-4 ">
+											{% set imagePath = asset('uploads/' ~ data.busiNameFile ~ '/' ~ data.firstPhoto) %}
+											<img src="{{ imagePath | imagine_filter('small') }}" class="w-full rounded-lg justify-items-center" alt="Image">
+										</div>
+
+										<!-- Nom du commerce -->
+										<h3 class="md:col-span-3 text-lg font-medium flex self-center">
+											<a href="{{ path('app_business', { id: business.id }) }}">
+												{{ business.name|upper }}
+											</a>
+										</h3>
+
+										<!-- Description -->
+										<p class="md:col-span-3 text-sm text-gray-500 flex self-center">
+											<a href="{{ path('app_business', { id: business.id }) }}">
+												{{ business.description }}
+											</a>
+										</p>
+									<!-- Adresse -->
+										<p class="md:col-span-3 text-sm text-gray-600">
+											Adresse :
+											<a href="{{ path('app_business', { id: business.id }) }}">
+												{% if business.streetNumber %}
+													{{ business.streetNumber }}
+												{% endif %}
+												{{ business.streetName }},
+												{{ business.cityName }}
+											</a>
+										</p>
+									</div>
+
+									<!-- Produits associés -->
+									{% if data.productList|length > 0 %}
+										<div class="mt-4">
+											<h4 class="text-md font-semibold mb-2">Produits associés :</h4>
+											<ul class="grid md:grid-cols-2">
+												{% for product in data.productList %}
+													<li class="flex items-start space-x-4 border rounded-md p-4 m-2 bg-gray-200">
+														<!-- Lien autour de l'image et des informations -->
+														<a href="{{ path('app_product', { id: product.product.id, businessId: product.product.business.id }) }}" class="flex items-start space-x-4">
+															<!-- Image du produit -->
+															<div class="flex-none w-16 h-16 bg-gray-200 rounded-md overflow-hidden">
+																{% if product.productFirstPhoto|length > 0 %}
+																	{% set imagePath = asset('uploads/' ~ data.busiNameFile ~ '/products/' ~ product.productFirstPhoto) %}
+																	<img src="{{ imagePath | imagine_filter('small') }}" class="w-full h-full object-cover" alt="Image de {{ product.product.name }}">
+																{% else %}
+																	<div class="flex items-center justify-center h-full text-gray-500">
+																		Pas d'image
+																	</div>
+																{% endif %}
+															</div>
+
+															<!-- Informations sur le produit -->
+															<div class="flex-1">
+																<p class="text-sm font-medium">{{ product.product.name }}</p>
+																<p class="text-sm text-gray-500">{{ product.product.description }}</p>
+																<p class="text-sm font-semibold mt-1">{{ product.product.price | number_format(2, '.', ',') }} €</p>
+															</div>
+														</a>
+													</li>
+												{% endfor %}
+											</ul>
+										</div>
+									{% endif %}
+
+
+								</li>
+							{% endfor %}
+						</ul>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+
+		<!-- Message d'erreur si aucun résultat trouvé -->
+		{% if not hasResults %}
+			<div class="p-6 border rounded-lg text-center">
+				<p class="text-lg font-medium text-red-500">Aucun résultat trouvé pour votre recherche.</p>
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

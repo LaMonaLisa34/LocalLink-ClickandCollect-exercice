@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Promotions
+{% endblock %}
+
+{% block body %}
+
+	{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+				<p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+				<div class="mt-2 text-sm">
+					{{ message|raw }}
+				</div>
+				<button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+					&times;
+				</button>
+			</div>
+
+			<script>
+				setTimeout(function () {
+let alert = document.getElementById('flash-message-{{ loop.index }}');
+if (alert) {
+alert.remove();
+}
+}, 3000);
+			</script>
+
+		{% endfor %}
+	{% endfor %}
+
+	<div class="grid gap-x-8 gap-y-1 mx-2 md:mx-20 lg:mx-52 mb-20">
+
+		<div class="mt-10">
+		<a href="/business/{{businessId}}/promotion/create" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600">Ajouter une promotion</a>
+			<p class="font-semibold text-2xl md:text-3xl mt-10">Gérer mes promotions</p>
+			
+		</div>
+		<div></div>
+
+		<div></div>
+		<div class="ml-2 md:ml-5">
+			<h3 class="font-semibold text-xl md:text-2xl">Promotions en cours</h3>
+			{% if currentPromotions|length > 0 %}
+				<ul>
+					{% for promotion in currentPromotions %}
+						<li class="">
+							<div class="grid grid-cols-1 md:grid-cols-6 gap-y-2 md:gap-y-0 flex items-center bg-gray-200 rounded-lg my-2 py-2">
+								<div class="p-1 md:mr-2 md:col-span-2 ml-1">
+									{% set imagePath = 'uploads/' ~ busiNameFile ~ '/promotionPhoto/' ~ promotion.imagePromotion %}
+									<img src="{{ imagePath | imagine_filter('small') }}" alt="Photo de la promotion" class="w-full h-full md:w-32 md:h-32 lg:w-full lg:h-full border border-black object-cover rounded-lg">
+								</div>
+								<div class="flex flex-col ml-2 md:ml-0 md:col-span-3">
+									<p class="text-lg font-semibold">{{ promotion.promotionName }}</p>
+									<p class="text-gray-800 text-xs md:text-sm italic">{{ promotion.promotionDescription }}</p>
+									<p class="text-gray-800 text-xs md:text-sm mt-1 md:mt-0">Vous avez -
+										{{promotion.reduction}}
+										% sur tous les produits du commerce
+										{{business.name}}</p>
+
+									<span class="text-gray-500 text-xs mt-1 md:mt-0">Du :
+										{{ promotion.beginDate|date("m/d/Y") }}</span>
+									<span class="text-gray-500 text-xs">Jusqu'au :
+										{{ promotion.endDate|date("m/d/Y") }}</span>
+								</div>
+								<div class="flex flex-row sm:flex-col ml-2 md:ml-0 my-2 md:my-0">
+									<form action="/business/{{businessId}}/promotion/{{ promotion.id }}/update" method="POST">
+										<button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-blue-600">Modifier</button>
+									</form>
+									<form action="/business/{{ businessId }}/promotion/{{ promotion.id }}/delete" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer les avis sélectionnés ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('delete_promotion') }}">
+										<button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-600 ml-5 sm:ml-0 mt-0 sm:mt-5">Supprimer</button>
+									</form>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<div class="border-b flex justify-between items-center px-4 py-2 ml-0 md:ml-5 bg-gray-100 border rounded-lg my-2">
+					<p>Aucune promotions en cours</p>
+				</div>
+
+			{% endif %}
+
+		</div>
+		<div></div>
+
+		<div></div>
+		<div class="ml-2 md:ml-5">
+			<h3 class="font-semibold text-xl md:text-2xl">Promotions à venir</h3>
+			{% if promotionsToCome|length > 0 %}
+
+				<ul>
+					{% for promotion in promotionsToCome %}
+						<li class="">
+							<div class="grid grid-cols-1 md:grid-cols-6 gap-y-2 md:gap-y-0 flex items-center bg-gray-200 rounded-lg my-2 py-2">
+								<div class="p-1 md:mr-2 md:col-span-2 ml-1">
+									{% set imagePath = 'uploads/' ~ busiNameFile ~ '/promotionPhoto/' ~ promotion.imagePromotion %}
+									<img src="{{ imagePath | imagine_filter('small') }}" alt="Photo de la promotion" class="w-full h-full md:w-32 md:h-32 lg:w-full lg:h-full border border-black object-cover rounded-lg">
+								</div>
+								<div class="flex flex-col ml-2 md:ml-0 md:col-span-3">
+									<p class="text-lg font-semibold">{{ promotion.promotionName }}</p>
+									<p class="text-gray-800 text-xs md:text-sm italic">{{ promotion.promotionDescription }}</p>
+									<p class="text-gray-800 text-xs md:text-sm mt-1 md:mt-0">Vous avez -
+										{{promotion.reduction}}
+										% sur tous les produits du commerce
+										{{business.name}}</p>
+
+									<span class="text-gray-500 text-xs mt-1 md:mt-0">Du :
+										{{ promotion.beginDate|date("m/d/Y") }}</span>
+									<span class="text-gray-500 text-xs">Jusqu'au :
+										{{ promotion.endDate|date("m/d/Y") }}</span>
+								</div>
+								<div class="flex flex-row sm:flex-col ml-2 md:ml-0 my-2 md:my-0">
+									<form action="/business/{{businessId}}/promotion/{{ promotion.id }}/update" method="POST">
+										<button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-blue-600">Modifier</button>
+									</form>
+									<form action="/business/{{ businessId }}/promotion/{{ promotion.id }}/delete" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer les avis sélectionnés ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('delete_promotion') }}">
+										<button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-600 ml-5 sm:ml-0 mt-0 sm:mt-5">Supprimer</button>
+									</form>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<div class="border-b flex justify-between items-center px-4 py-2 ml-0 md:ml-5 bg-gray-100 border rounded-lg my-2">
+					<p>Aucune promotion à venir</p>
+				</div>
+
+			{% endif %}
+		</div>
+		<div></div>
+
+
+		<div></div>
+		<div class="ml-2 md:ml-5">
+			<h3 class="font-semibold text-xl md:text-2xl">Promotions passées</h3>
+			{% if previousPromotions|length > 0 %}
+
+				<ul>
+					{% for promotion in previousPromotions %}
+						<li class="">
+							<div class="grid grid-cols-1 md:grid-cols-6 gap-y-2 md:gap-y-0 flex items-center bg-gray-200 rounded-lg my-2 py-2">
+								<div class="p-1 md:mr-2 md:col-span-2 ml-1">
+									{% set imagePath = 'uploads/' ~ busiNameFile ~ '/promotionPhoto/' ~ promotion.imagePromotion %}
+									<img src="{{ imagePath | imagine_filter('small') }}" alt="Photo de la promotion" class="w-full h-full md:w-32 md:h-32 lg:w-full lg:h-full border border-black object-cover rounded-lg">
+								</div>
+								<div class="flex flex-col ml-2 md:ml-0 md:col-span-3">
+									<p class="text-lg font-semibold">{{ promotion.promotionName }}</p>
+									<p class="text-gray-800 text-xs md:text-sm italic">{{ promotion.promotionDescription }}</p>
+									<p class="text-gray-800 text-xs md:text-sm mt-1 md:mt-0">Vous avez -
+										{{promotion.reduction}}
+										% sur tous les produits du commerce
+										{{business.name}}</p>
+
+									<span class="text-gray-500 text-xs mt-1 md:mt-0">Du :
+										{{ promotion.beginDate|date("m/d/Y") }}</span>
+									<span class="text-gray-500 text-xs">Jusqu'au :
+										{{ promotion.endDate|date("m/d/Y") }}</span>
+								</div>
+								<div class="flex flex-row sm:flex-col ml-2 md:ml-0 my-2 md:my-0">
+									<form action="/business/{{businessId}}/promotion/{{ promotion.id }}/update" method="POST">
+										<button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-blue-600">Modifier</button>
+									</form>
+									<form action="/business/{{ businessId }}/promotion/{{ promotion.id }}/delete" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer les avis sélectionnés ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('delete_promotion') }}">
+										<button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-600 ml-5 sm:ml-0 mt-0 sm:mt-5">Supprimer</button>
+									</form>
+								</div>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<div class="border-b flex justify-between items-center px-4 py-2 ml-0 md:ml-5 bg-gray-100 border rounded-lg my-2">
+					<p>Aucune promotion passée</p>
+				</div>
+
+			{% endif %}
+		</div>
+		<div ></div>
+
+	</div class="mb-40">
+</div>{% endblock %}

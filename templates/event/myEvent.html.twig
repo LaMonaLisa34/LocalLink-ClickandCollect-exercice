@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Événements{% endblock %}
+
+{% block body %}
+<div class="w-full max-w-5xl mx-auto px-4 overflow-hidden">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+                <p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+                <div class="mt-2 text-sm">{{ message|raw }}</div>
+                <button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+                    &times;
+                </button>
+            </div>
+            <script>
+                setTimeout(function () {
+                    let alert = document.getElementById('flash-message-{{ loop.index }}');
+                    if (alert) {
+                        alert.remove();
+                    }
+                }, 1500);
+            </script>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="mt-10 grid gap-x-8 gap-y-1 mx-2 md:mx-20 lg:mx-52 mb-20">
+        {% if business.validated is same as(true) %}
+            <div class="text-left">
+                <a href="/business/{{ businessId }}/event/create" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600">Ajouter un événement</a>
+                <p class="font-semibold text-2xl md:text-3xl mt-10">Gérer mes événements</p>
+            </div>
+            
+            {% for category, events in {'Événements en cours': currentEvents, 'Événements à venir': eventsToCome, 'Événements passés': previousEvents} %}
+                <div class="mt-8">
+                    <h3 class="font-semibold text-xl md:text-2xl">{{ category }}</h3>
+                    {% if events|length > 0 %}
+                        <ul class="space-y-4">
+                            {% for event in events %}
+                                <li>
+                                    <div class="border p-4 bg-gray-200 rounded-lg flex flex-col gap-4">
+                                        <div>
+                                            <p class="text-lg font-semibold">{{ event.nameEvent }}</p>
+                                            <p class="text-gray-800 text-sm italic">{{ event.descriptionEvent }}</p>
+                                            <p class="text-gray-500 text-xs">Du : {{ event.beginDate|date("d/m/Y") }} - Jusqu'au : {{ event.endDate|date("d/m/Y") }}</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <form action="/business/event/{{ event.id }}/update" method="POST">
+                                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-xs hover:bg-blue-600">Modifier</button>
+                                            </form>
+                                            <form action="/business/{{ businessId }}/event/{{ event.id }}/delete" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_event') }}">
+                                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg text-xs hover:bg-red-600">Supprimer</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="border p-4 bg-gray-100 rounded-lg mt-2">
+                            <p>Aucun {{ category | lower }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="text-center mt-10">
+                <p class="text-2xl">Vous tentez d'accéder au gestionnaire d'événements d'un commerce non validé.</p>
+                <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5 inline-block">Revenir à l'accueil</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

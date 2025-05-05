@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Mon espace
+{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto mt-10">
+        
+        <!-- Statut du commerce -->
+        {% if business is not null %}
+            <div class="shadow-md rounded-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold text-800 mb-4 text-center">Statut de votre commerce</h2>
+
+                {% if business.validated == 0 and business.rejectionReason is not null %}
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+                        <p class="font-bold">Votre commerce a été rejeté.</p>
+                        <p>Raisons du rejet : {{ business.rejectionReason }}</p>
+                        <a href="{{ path('app_business_c_r_u_d_edit', {'id': business.id}) }}" class="text-blue-600 hover:underline font-medium">
+                            Modifier mon commerce
+                        </a>
+                    </div>
+                {% elseif business.validated == 0 %}
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
+                        <p class="font-bold">Votre commerce est en cours de validation.</p>
+                    </div>
+                {% elseif business.validated == 1 %}
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
+                        <p class="font-bold">Votre commerce est en ligne !</p>
+                        <a href="/home/business/{{ business.id }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition mt-4 block text-center">
+                            Voir ma page
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Tableau de bord -->
+        <h2 class="text-2xl font-bold text-800 mb-4 text-center">Tableau de Bord</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-32">
+            
+            <a href="{{ path('moncompte') }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                <i class="fas fa-user text-green-600 text-4xl mb-3"></i>
+                <h3 class="text-lg font-semibold">Mon profil</h3>
+                <p class="text-gray-500 text-sm">Gérez ou supprimez votre compte.</p>
+            </a>
+
+            <a href="{{ path('app_command_user_history', {'userId': user.id}) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                <i class="fas fa-shopping-cart text-blue-500 text-4xl mb-3"></i>
+                <h3 class="text-lg font-semibold">Mes commandes</h3>
+                <p class="text-gray-500 text-sm">Commandes passées dans d'autres commerces.</p>
+            </a>
+
+            {% if not business %}
+                <a href="{{ path('add_commerce') }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                    <i class="fas fa-store text-blue-600 text-4xl mb-3"></i>
+                    <h3 class="text-lg font-semibold">Ajouter mon commerce</h3>
+                    <p class="text-gray-500 text-sm">Ajoutez facilement votre commerce.</p>
+                </a>
+            {% endif %}
+
+            {% if business %}
+                {% if business.validated is same as(true) %}
+                    <a href="{{ path('app_business_c_r_u_d_edit', {'id': business.id}) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                        <i class="fas fa-edit text-yellow-500 text-4xl mb-3"></i>
+                        <h3 class="text-lg font-semibold">Modifier mon commerce</h3>
+                        <p class="text-gray-500 text-sm">Modifiez les informations de votre commerce.</p>
+                    </a>
+
+                    <a href="{{ path('add_product', {'businessId': business.id}) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                        <i class="fas fa-box text-purple-500 text-4xl mb-3"></i>
+                        <h3 class="text-lg font-semibold">Gestion des produits</h3>
+                        <p class="text-gray-500 text-sm">Ajouter, modifier ou supprimer vos produits.</p>
+                    </a>
+
+                    <a href="{{ path('app_statistique_commerce', { id: business.id }) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                        <i class="fas fa-chart-line text-indigo-600 text-4xl mb-3"></i>
+                        <h3 class="text-lg font-semibold">Statistiques</h3>
+                        <p class="text-gray-500 text-sm">Consultez les performances de votre commerce.</p>
+                    </a>
+
+                    <a href="{{ path('app_commandes_recu', {'businessId': business.id}) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                        <i class="fas fa-clipboard-list text-green-500 text-4xl mb-3"></i>
+                        <h3 class="text-lg font-semibold">Commandes reçues</h3>
+                        <p class="text-gray-500 text-sm">Commandes passées sur votre commerce.</p>
+                    </a>
+
+                    <a href="{{ path('app_myEvent', { businessId: business.id }) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                        <i class="fas fa-calendar-alt text-green-600 text-4xl mb-3"></i>
+                        <h3 class="text-lg font-semibold">Événements</h3>
+                        <p class="text-gray-500 text-sm">Gérez et consultez les événements de votre commerce.</p>
+                    </a>
+
+                    <a href="{{ path('app_myPromotions', { businessId: business.id }) }}" class="block shadow-md rounded-lg p-5 text-center hover:shadow-lg transition">
+                        <i class="fas fa-calendar-alt text-green-600 text-4xl mb-3"></i>
+                        <h3 class="text-lg font-semibold">Promotions</h3>
+                        <p class="text-gray-500 text-sm">Gérez et consultez les promotions de votre commerce.</p>
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,501 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Administration
+{% endblock %}
+
+{% block body %}
+
+
+	<div
+		class="admin-panel flex h-screen">
+		<!-- Sidebar Navigation -->
+		<aside class="sidebar w-64 flex flex-col hidden lg:flex">
+			<div class="sidebar-header p-4 border-b">
+				<h1 class="text-xl font-bold">Admin Panel</h1>
+			</div>
+			<nav class="flex-1 overflow-y-auto">
+				<ul class="menu-list space-y-2 p-4">
+					<li>
+						<a href="#boutique-validation" class="menu-item p-2 rounded" data-section="boutique-validation">Validation Boutiques</a>
+					</li>
+					<li>
+						<a href="#categories" class="menu-item p-2 rounded" data-section="categories">Catégories</a>
+					</li>
+					<li>
+						<a href="#boutiques-visibles" class="menu-item p-2 rounded" data-section="boutiques-visibles">Boutiques Membre</a>
+					</li>
+					<li>
+						<a href="#statistiques" class="menu-item p-2 rounded" data-section="statistiques">Statistiques du Site</a>
+					</li>
+				</ul>
+			</nav>
+		</aside>
+
+		<!-- Mobile Sidebar (Burger Menu) -->
+		<div class="mobile-menu lg:hidden">
+			<button id="burger-button" class="p-4 text-gray-700">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/>
+				</svg>
+			</button>
+			<nav id="mobile-sidebar" class="absolute top-0 left-0 w-64  h-screen shadow-lg transform -translate-x-full transition-transform duration-300">
+				<div class="p-4 border-b flex justify-between items-center">
+					<h1 class="text-xl font-bold">Admin Panel</h1>
+					<button id="close-button" class="text-gray-700">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+						</svg>
+					</button>
+				</div>
+				<ul class="menu-list space-y-2 p-4">
+					<li>
+						<a href="#boutique-validation" class="menu-item p-2 rounded" data-section="boutique-validation">Validation Boutiques</a>
+					</li>
+					<li>
+						<a href="#categories" class="menu-item p-2 rounded" data-section="categories">Catégories</a>
+					</li>
+					<li>
+						<a href="#boutiques-visibles" class="menu-item p-2 rounded" data-section="boutiques-visibles">Boutiques Membre</a>
+					</li>
+					<li>
+						<a href="#statistiques" class="menu-item p-2 rounded" data-section="statistiques">Statistiques du Site</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+
+		<main class="flex-1 overflow-y-auto p-6" id="content">
+		{% for label, messages in app.flashes %}
+		{% for message in messages %}
+			<div id="flash-message-{{ loop.index }}" class="alert {{ label == 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700' }} p-4 mb-4 rounded relative">
+				<p class="font-bold">{{ label == 'error' ? 'Une erreur est survenue :' : 'Succès :' }}</p>
+				<div class="mt-2 text-sm">
+					{{ message|raw }}
+				</div>
+				<button type="button" onclick="document.getElementById('flash-message-{{ loop.index }}').remove()" class="absolute top-2 right-2 {{ label == 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+					&times;
+				</button>
+			</div>
+
+			<script>
+				setTimeout(function () {
+let alert = document.getElementById('flash-message-         {{ loop.index }}');
+if (alert) {
+alert.remove();
+}
+}, 3000);
+			</script>
+
+		{% endfor %}
+	{% endfor %}
+			<section id="boutique-validation" class="hidden-admin-admin">
+				<h2 class="text-3xl font-bold mb-4 text-center">Validation des Boutiques</h2>
+				<div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+					{% for business in businessData %}
+						{% if business.business.isValidated() == 0 %}
+							<div
+								class="relative flex flex-col items-start space-y-4 p-4 rounded-lg shadow-md
+									{% if business.business.getRejectionReason() is not null %}opacity-50{% endif %}">
+
+								<!-- Voile pour commerce rejeté -->
+								{% if business.business.getRejectionReason() is not null %}
+									<div class="absolute inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-10">
+										<p class="text-white text-lg font-bold">Rejeté - En attente de modifications</p>
+									</div>
+								{% endif %}
+
+								<!-- Image -->
+								<div class="flex-shrink-0 w-full h-40 bg-gray-200 rounded-md overflow-hidden">
+									{% if business.photo %}
+										{% set imagePath = 'uploads/' ~ business.businessName ~ '/' ~ business.photo %}
+										<img src="{{ imagePath | imagine_filter('full') }}" class="w-full h-full object-cover" alt=" image de {{business.business.name}} ">
+									{% else %}
+										<div class="flex items-center justify-center h-full text-gray-500">Pas d'image</div>
+									{% endif %}
+								</div>
+
+								<!-- Informations -->
+								<div class="flex-1 w-full">
+									<h3 class="text-xl font-semibold text-center lg:text-left">{{ business.business.getName()|upper }}</h3>
+									<p class="text-gray-600 mb-2 text-center lg:text-left">{{ business.business.getDescription() }}</p>
+									<p class="text-sm text-gray-500 text-center lg:text-left">
+										Adresse :
+										{{ business.business.getStreetNumber() }}
+										{{ business.business.getStreetName() }},
+										{{ business.business.getCityName() }}
+									</p>
+									<p class="text-sm text-gray-500 text-center lg:text-left">Catégorie :
+										{{ business.businessCategory }}</p>
+								</div>
+
+								<!-- Actions -->
+								<div
+									class="flex flex-col space-y-2 w-full items-center lg:items-end">
+
+
+									<!-- Modal -->
+									<input type="checkbox" id="rejection-modal-{{ business.business.getId() }}" class="peer hidden">
+									<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 peer-checked:flex hidden">
+										<div
+											class=" p-6 rounded shadow-lg w-80 bg-white">
+											<!-- Titre -->
+											<h2 class="text-xl font-bold mb-4 text-center">Raisons du rejet</h2>
+											<!-- Formulaire -->
+											<form method="post" action="{{ path('rejeter_commerce', { id: business.business.getId() }) }}">
+												<div
+													class="space-y-3">
+													<!-- Options prédéfinies -->
+													<label class="block">
+														<input type="checkbox" name="rejection_reasons[]" value="Problème de photo">
+														Problème de photo
+													</label>
+													<label class="block">
+														<input type="checkbox" name="rejection_reasons[]" value="Problème de téléphone">
+														Problème de téléphone
+													</label>
+													<label class="block">
+														<input type="checkbox" name="rejection_reasons[]" value="Problème de description">
+														Problème de description boutique
+													</label>
+													<label class="block">
+														<input type="checkbox" name="rejection_reasons[]" value="Informations incomplètes">
+														Informations incomplètes
+													</label>
+													<label class="block">
+														<input type="checkbox" name="rejection_reasons[]" value="Problème de documents">
+														Problème de documents
+													</label>
+													<label class="block">
+														<input type="checkbox" name="rejection_reasons[]" value="Autre">
+														Autre
+													</label>
+													<textarea name="other_reason" class="border p-2 mt-4 w-full rounded" placeholder="Précisez la raison (facultatif)"></textarea>
+												</div>
+												<!-- Boutons -->
+												<div
+													class="mt-6 flex justify-end space-x-2">
+													<!-- Bouton Annuler -->
+													<label for="rejection-modal-{{ business.business.getId() }}" class="bg-gray-300 px-4 py-2 rounded cursor-pointer">
+														Annuler
+													</label>
+													<!-- Bouton Soumettre -->
+													<button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+														Rejeter
+													</button>
+												</div>
+											</form>
+										</div>
+									</div>
+
+									<!-- Bouton pour ouvrir le modal -->
+									<label for="rejection-modal-{{ business.business.getId() }}" class="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-600">
+										Rejeter
+									</label>
+									<!-- Bouton Valider -->
+									<form method="post" action="{{ path('app_valide_commerce', { id: business.business.getId() }) }}">
+										<button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600
+																																																																													                                   {% if business.business.getRejectionReason() is not null %}opacity-50 cursor-not-allowed{% endif %}" {% if business.business.getRejectionReason() is not null %} disabled {% endif %}>
+											Valider
+										</button>
+									</form>
+								</div>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</section>
+
+
+			<!-- Catégories -->
+			<section id="categories" class="admin-section">
+				<h2 class="text-3xl font-bold mb-4 text-center">Categories</h2>
+				<div class="space-y-3">
+					<ul class="space-y-1">
+						{% for category in categories %}
+							<li class="flex flex-col sm:flex-row justify-between items-center border p-2 rounded">
+								<span class="block w-full sm:w-auto text-center sm:text-left">{{ category.getCategory() }}</span>
+								<div class="flex justify-center sm:justify-start space-x-2 mt-2 sm:mt-0">
+									<form method="post" action="{{ path('app_category_edit', { id: category.getId() }) }}#categories" class="flex items-center space-x-2">
+										<input type="text" name="category_name" value="{{ category.getCategory() }}" class="border p-1 rounded w-full sm:w-auto">
+										<button type="submit" class="text-sm bg-blue-100 text-blue-800 border px-2 py-1 rounded">Modifier</button>
+									</form>
+									<form method="post" action="{{ path('app_category_delete', { id: category.getId() }) }}#categories" onsubmit="return confirm('Êtes-vous sûr ?');" class="flex items-center">
+										<button type="submit" class="text-sm bg-red-100 text-red-800 border px-2 py-1 rounded">Supprimer</button>
+									</form>
+								</div>
+							</li>
+						{% else %}
+							<p class="text-sm text-center">Aucune catégorie créée.</p>
+						{% endfor %}
+					</ul>
+
+					<!-- Ajouter une catégorie -->
+					<div class="mt-4">
+						<h3 class="text-base font-medium mb-2 text-center sm:text-left">Ajouter une Catégorie</h3>
+						{{ form_start(categoryForm, {'attr': {'class': 'space-y-2'}}) }}
+						{{ form_row(categoryForm.category, {'attr': {'class': 'w-full border p-1 rounded'}}) }}
+						<button type="submit" class="w-full sm:w-auto bg-green-100 text-green-800 border py-2 px-3 rounded">Ajouter</button>
+						{{ form_end(categoryForm) }}
+					</div>
+				</div>
+			</section>
+
+
+			<!-- STATISTIQUES -->
+			<section id="statistiques" class="hidden-admin max-w-4xl mx-auto mt-10">
+				<h2 class="text-3xl font-bold text-800 mb-6 text-center">Statistiques du site</h2>
+
+				<!-- Grille des statistiques -->
+				<div
+					class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+					<!-- Nombre de commandes -->
+					<div class=" shadow-lg rounded-lg p-6 flex items-center space-x-4">
+						<div class="flex items-center justify-center w-14 h-14 bg-blue-100 rounded-full">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-blue-500">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3 10h2m0 0a2 2 0 012-2h10a2 2 0 012 2m-2-2v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6zm2 6h10"/>
+							</svg>
+						</div>
+						<div>
+							<h4 class="text-lg font-semibold text-gray-700">Nombre de commandes</h4>
+							<p class="text-gray-500 text-xl font-bold">{{ commandCount|default('Non disponible') }}</p>
+						</div>
+					</div>
+
+					<!-- Nombre d'utilisateurs -->
+					<div class=" shadow-lg rounded-lg p-6 flex items-center space-x-4">
+						<div class="flex items-center justify-center w-14 h-14 bg-green-100 rounded-full">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-green-500">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M16 17l-4 4m0 0l-4-4m4 4V3"/>
+							</svg>
+						</div>
+						<div>
+							<h4 class="text-lg font-semibold text-gray-700">Nombre d'utilisateurs</h4>
+							<p class="text-gray-500 text-xl font-bold">{{ userCount|default('Non disponible') }}</p>
+						</div>
+					</div>
+
+					<!-- Commerces non validés -->
+					<div class="bg-yellow-100 shadow-md rounded-lg p-6 text-center">
+						<h4 class="text-lg font-bold text-yellow-800">Commerces non validés</h4>
+						<p class="text-gray-600 text-xl font-semibold">{{ unvalidatedCount }}
+							en attente</p>
+					</div>
+
+					<!-- Commerces validés -->
+					<div class="bg-green-100 shadow-md rounded-lg p-6 text-center">
+						<h4 class="text-lg font-bold text-green-800">Commerces validés</h4>
+						<p class="text-gray-600 text-xl font-semibold">{{ validatedCount }}
+							en ligne</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- BOUTIQUES validés -->
+			<section id="boutiques-visibles" class="hidden-admin">
+				<h2 class="text-3xl font-bold mb-6 text-center">Boutiques Membre</h2>
+
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+					{% for business in businessData %}
+						{% if business.business.isValidated() == 1 %}
+							<div
+								class="rounded-lg shadow-lg p-6 flex flex-col justify-between bg-white border border-gray-200 h-full">
+
+								<!-- Image du commerce -->
+								<div class="w-full h-40 bg-gray-200 rounded-md overflow-hidden mb-4">
+									{% if business.photo %}
+										{% set imagePath = 'uploads/' ~ business.businessName ~ '/' ~ business.photo %}
+										<img src="{{ imagePath | imagine_filter('full') }}" class="w-full h-full object-cover" alt=" image de {{business.business.name}} ">
+									{% else %}
+										<div class="flex items-center justify-center h-full text-gray-500">Pas d'image</div>
+									{% endif %}
+								</div>
+
+								<!-- Informations du commerce -->
+								<div class="flex-1 w-full">
+									<h3 class="text-xl font-bold text-gray-900">{{ business.business.getName()|upper }}</h3>
+									<p class="text-gray-600 text-sm mb-2">{{ business.business.getDescription() }}</p>
+
+									<div class="text-sm text-gray-500 mb-4">
+										<p>
+											<i class="fas fa-map-marker-alt text-gray-400"></i>
+											{{ business.business.getStreetNumber() }}
+											{{ business.business.getStreetName() }},
+											{{ business.business.getCityName() }}</p>
+										<p>
+											<i class="fas fa-list text-gray-400"></i>
+											Catégorie :
+											{{ business.businessCategory }}</p>
+									</div>
+								</div>
+								<!-- Statistiques et empreinte carbone -->
+								<div
+									class="flex justify-between items-center mb-4">
+									<!-- Nombre de vues -->
+									<span class="flex items-center text-gray-500 text-sm">
+										<i class="fas fa-eye text-gray-400 mr-1"></i>
+										{{ business.business.getStatistic() }}
+										vues
+									</span>
+
+									<!-- Empreinte carbone avec badge -->
+									{% set footprint = business.business.getFootprintCarbon() %}
+
+									{% if footprint == 0 %}
+										{% set category = 'Non évalué' %}
+										{% set color = 'bg-gray-300 text-gray-800' %}
+										{% set icon = 'fas fa-question-circle text-gray-700' %}
+									{% elseif footprint == 10 %}
+										{% set category = 'Faible' %}
+										{% set color = 'bg-green-300 text-green-800' %}
+										{% set icon = 'fas fa-seedling text-green-700' %}
+									{% elseif footprint == 30 %}
+										{% set category = 'Moyenne' %}
+										{% set color = 'bg-yellow-300 text-yellow-800' %}
+										{% set icon = 'fas fa-leaf text-yellow-700' %}
+									{% elseif footprint == 60 %}
+										{% set category = 'Élevée' %}
+										{% set color = 'bg-orange-300 text-orange-800' %}
+										{% set icon = 'fas fa-tree text-orange-700' %}
+									{% else %}
+										{% set category = 'Très élevée' %}
+										{% set color = 'bg-red-300 text-red-800' %}
+										{% set icon = 'fas fa-exclamation-triangle text-red-700' %}
+									{% endif %}
+
+									<span class="px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 {{ color }}">
+										<i class="{{ icon }}"></i>
+										{{ category }}
+									</span>
+								</div>
+
+								<!-- Modifier l'empreinte carbone -->
+								<form method="POST" action="{{ path('app_admin_update_footprint', { id: business.business.getId() }) }}" class="flex items-center justify-between mb-4">
+									<select name="footprint_carbon" class="form-select p-1 border rounded">
+										<option value="0" {% if footprint == 0 %} selected {% endif %}>Non évalué</option>
+										<option value="10" {% if footprint == 10 %} selected {% endif %}>Faible</option>
+										<option value="30" {% if footprint == 30 %} selected {% endif %}>Moyenne</option>
+										<option value="60" {% if footprint == 60 %} selected {% endif %}>Élevée</option>
+										<option value="100" {% if footprint == 100 %} selected {% endif %}>Très élevée</option>
+									</select>
+									<button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
+										Modifier
+									</button>
+								</form>
+
+
+								<!-- Bouton Bannir -->
+								<div class="w-full flex justify-end">
+									<form method="post" action="{{ path('app_delete_commerce', { id: business.business.getId() }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commerce ?');">
+										<button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm">
+											Bannir
+										</button>
+									</form>
+								</div>
+
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</section>
+
+
+		</main>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+const menuItems = document.querySelectorAll('.menu-item');
+const burgerButton = document.getElementById('burger-button');
+const mobileSidebar = document.getElementById('mobile-sidebar');
+const closeButton = document.getElementById('close-button');
+
+burgerButton.addEventListener('click', () => {
+mobileSidebar.classList.remove('-translate-x-full');
+});
+
+closeButton.addEventListener('click', () => {
+mobileSidebar.classList.add('-translate-x-full');
+});
+
+menuItems.forEach(item => {
+item.addEventListener('click', event => {
+event.preventDefault();
+const sectionId = item.getAttribute('data-section');
+showSection(sectionId);
+mobileSidebar.classList.add('-translate-x-full');
+});
+});
+
+showSection('boutique-validation'); // Default section
+});
+
+function showSection(sectionId) {
+const sections = document.querySelectorAll('main section');
+sections.forEach(section => {
+section.classList.add('hidden-admin');
+});
+
+const targetSection = document.getElementById(sectionId);
+if (targetSection) {
+targetSection.classList.remove('hidden-admin');
+}
+
+window.scrollTo({top: 0, behavior: 'smooth'});
+}
+	</script>
+
+	<style>
+		h2 {
+			margin-top: 50px;
+		}
+
+		.sidebar {
+			min-width: 16rem;
+		}
+
+		.menu-list a {
+			display: block;
+			padding: 0.5rem 1rem;
+			transition: background 0.3s;
+		}
+
+		.menu-item:hover {
+			background: rgba(199, 224, 243, 0.55);
+		}
+
+		.hidden-admin {
+			display: none !important;
+		}
+
+		.mobile-menu {
+			position: relative;
+		}
+
+		#mobile-sidebar {
+			z-index: 1000;
+		}
+
+		@media(max-width: 1024px) {
+			.sidebar {
+				display: none;
+			}
+		}
+
+		#boutiques-visible {
+			z-index: 0;
+		}
+
+		/* Contexte principal du modal */
+		#rejection-modal {
+			z-index: 9999;
+			position: fixed;
+		}
+
+		/* Contenu du modal */
+		#rejection-modal .modal-content {
+			z-index: 10000;
+		}
+	</style>
+{% endblock %}
