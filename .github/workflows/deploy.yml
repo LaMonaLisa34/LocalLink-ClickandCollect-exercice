@@ -36,7 +36,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: admin_mona
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: /tmp/id_rsa
 	  port: 2222
           source: .
           target: /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
@@ -47,7 +47,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: admin_mona
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: /tmp/id_rsa
 	  port: 2222
           script: |
             cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
