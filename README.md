@@ -9,7 +9,6 @@ Elle propose un système de **click and collect local**, permettant aux utilisat
 Le projet inclut également une **API intégrée** pour permettre des extensions vers une application mobile ou des services externes. 
 
 ---
-
 ## Technologies
 
 - PHP 8.2
