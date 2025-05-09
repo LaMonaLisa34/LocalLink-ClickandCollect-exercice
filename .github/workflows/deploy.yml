@@ -48,6 +48,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: admin_mona
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+	  port: 2222
           script: |
             cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
             composer install --no-interaction --prefer-dist --optimize-autoloader
