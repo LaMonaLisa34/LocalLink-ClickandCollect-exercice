@@ -37,6 +37,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: admin_mona
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+	  port: 2222
           source: .
           target: /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
           strip_components: 1
