@@ -31,3 +31,24 @@ jobs:
           echo "JWT_SECRET_KEY='${JWT_SECRET_KEY}'" >> .env.local
           echo "TRUSTED_PROXIES=${TRUSTED_PROXIES}" >> .env.local
 
+      - name: Copier les fichiers Symfony sur la VM
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: admin_mona
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: .
+          target: /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
+          strip_components: 1
+
+      - name: Lancer les commandes Symfony sur la VM
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: admin_mona
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            php bin/console doctrine:migrations:migrate --no-interaction
+            php bin/console cache:clear
