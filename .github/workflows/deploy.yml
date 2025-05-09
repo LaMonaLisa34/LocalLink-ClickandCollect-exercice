@@ -1,5 +1,9 @@
 name: Déploiement Symfony - LOCAL LINK
 
+on:
+  push:
+    branches: [ main ]
+
 env:
   APP_ENV: ${{ secrets.APP_ENV }}
   APP_SECRET: ${{ secrets.APP_SECRET }}
@@ -8,3 +12,22 @@ env:
   JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
   JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
   TRUSTED_PROXIES: ${{ secrets.TRUSTED_PROXIES }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Créer le fichier .env.local avec les secrets
+        run: |
+          echo "APP_ENV=${APP_ENV}" > .env.local
+          echo "APP_SECRET=${APP_SECRET}" >> .env.local
+          echo "DATABASE_URL=${DATABASE_URL}" >> .env.local
+          echo "JWT_PASSPHRASE=${JWT_PASSPHRASE}" >> .env.local
+          echo "JWT_PUBLIC_KEY='${JWT_PUBLIC_KEY}'" >> .env.local
+          echo "JWT_SECRET_KEY='${JWT_SECRET_KEY}'" >> .env.local
+          echo "TRUSTED_PROXIES=${TRUSTED_PROXIES}" >> .env.local
+
