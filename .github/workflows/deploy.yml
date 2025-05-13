@@ -47,10 +47,9 @@ jobs:
 
             # Création et permissions AVANT tout
             mkdir -p var/cache var/log
-            chmod -R 775 var/
-            chmod -R 775 var public/uploads
-            chown -R www-data:www-data var public/uploads || true
-            chown -R $(whoami):$(whoami) var/ || true
+            mkdir -p var/cache var/log public/uploads
+            chmod -R 775 var/ public/uploads
+            chown -R www-data:www-data var/ public/uploads
 
             # Installer les dépendances
             composer install --no-interaction --prefer-dist --optimize-autoloader
