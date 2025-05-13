@@ -3,7 +3,7 @@ name: Déploiement Symfony - LOCAL LINK
 on:
   push:
     branches:
-      - main
+      - main  # Déclenchement sur un push vers la branche main
 
 jobs:
   build:
@@ -45,10 +45,12 @@ jobs:
           script: |
             cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
 
-            # Création et permissions
-            mkdir -p var/cache var/log public/uploads
-            chmod -R 775 var/ public/uploads
-            chown -R www-data:www-data var/ public/uploads
+            # Création et permissions AVANT tout
+            mkdir -p var/cache var/log
+            chmod -R 775 var/
+            chmod -R 775 var public/uploads
+            chown -R www-data:www-data var public/uploads || true
+            chown -R $(whoami):$(whoami) var/ || true
 
             # Installer les dépendances
             composer install --no-interaction --prefer-dist --optimize-autoloader
