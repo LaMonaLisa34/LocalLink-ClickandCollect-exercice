@@ -24,7 +24,8 @@ jobs:
 
       - name: Créer le fichier .env.local avec les secrets
         run: |
-          echo "APP_ENV=${{ secrets.APP_ENV }}" > .env.local
+	  echo "APP_ENV=prod" > .env.local
+          echo "APP_DEBUG=0" >> .env.local
           echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env.local
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
           echo "JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}" >> .env.local
