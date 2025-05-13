@@ -2,6 +2,7 @@
 
 ![Symfony](https://img.shields.io/badge/Symfony-7.0-blue)
 
+
 Local Link est une application web développée avec Symfony dans le cadre d’un **projet pédagogique**. Projet réalisé en groupe. 
 
 Elle propose un système de **click and collect local**, permettant aux utilisateurs de consulter les points de retrait (producteurs, commerçants, artisans…), de découvrir les produits disponibles et de passer commande en ligne pour un retrait sur place.

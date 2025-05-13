@@ -22,7 +22,6 @@ jobs:
           echo "JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}" >> .env.local
           echo "JWT_PUBLIC_KEY='${{ secrets.JWT_PUBLIC_KEY }}'" >> .env.local
           echo "JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'" >> .env.local
-          echo "TRUSTED_PROXIES=${{ secrets.TRUSTED_PROXIES }}" >> .env.local
 
       - name: Copier les fichiers Symfony sur la VM
         uses: appleboy/scp-action@v0.1.4
