@@ -15,7 +15,7 @@ jobs:
 
       - name: Créer le fichier .env.local avec les secrets
         run: |
-	  echo "APP_ENV=prod" > .env.local
+          echo "APP_ENV=prod" > .env.local
           echo "APP_DEBUG=0" >> .env.local
           echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env.local
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
@@ -41,10 +41,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: admin_mona
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2222
-          script: |
-            cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-            php bin/console doctrine:migrations:migrate --no-interaction
-            php bin/console cache:clear
 
