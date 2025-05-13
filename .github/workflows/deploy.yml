@@ -3,7 +3,7 @@ name: Déploiement Symfony - LOCAL LINK
 on:
   push:
     branches:
-      - main  # Déclenchement sur un push vers la branche main
+      - main
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: admin_mona
+          username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
           source: .
@@ -39,18 +39,16 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: admin_mona
+          username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
           script: |
             cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
 
-            # Création et permissions AVANT tout
-            mkdir -p var/cache var/log
-            chmod -R 775 var/
-            chmod -R 775 var public/uploads
-            chown -R www-data:www-data var public/uploads || true
-            chown -R $(whoami):$(whoami) var/ || true
+            # Création et permissions
+            mkdir -p var/cache var/log public/uploads
+            chmod -R 775 var/ public/uploads
+            chown -R www-data:www-data var/ public/uploads
 
             # Installer les dépendances
             composer install --no-interaction --prefer-dist --optimize-autoloader
