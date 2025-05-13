@@ -44,9 +44,17 @@ jobs:
           port: 2222
           script: |
             cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-            php bin/console doctrine:migrations:migrate --no-interaction
-            php bin/console cache:clear
-            mkdir -p var/cache var/log
-            chown -R www-data:www-data var
 
+            # Création et permissions AVANT tout
+            mkdir -p var/cache var/log
+            chmod -R 775 var/
+            chown -R $(whoami):$(whoami) var/ || true
+
+            # Installer les dépendances
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            # Migration DB
+            php bin/console doctrine:migrations:migrate --no-interaction || true
+
+            # Clear cache (maintenant que les droits sont bons)
+            php bin/console cache:clear || true
