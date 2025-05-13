@@ -1,0 +1,8 @@
+name: Déploiement Symfony env:
+  APP_ENV: ${{ secrets.APP_ENV }}
+  APP_SECRET: ${{ secrets.APP_SECRET }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
+  JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  TRUSTED_PROXIES: ${{ secrets.TRUSTED_PROXIES }}

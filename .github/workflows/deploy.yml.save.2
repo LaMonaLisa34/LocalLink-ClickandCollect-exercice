@@ -2,8 +2,7 @@ name: Déploiement Symfony - LOCAL LINK
 
 on:
   push:
-    branches:
-      - main  # Déclenchement sur un push vers la branche main
+    branches: [ main ]
 
 env:
   APP_ENV: ${{ secrets.APP_ENV }}
@@ -24,35 +23,27 @@ jobs:
 
       - name: Créer le fichier .env.local avec les secrets
         run: |
-          echo "APP_ENV=${{ secrets.APP_ENV }}" > .env.local
-          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env.local
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
-          echo "JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}" >> .env.local
-          echo "JWT_PUBLIC_KEY='${{ secrets.JWT_PUBLIC_KEY }}'" >> .env.local
-          echo "JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'" >> .env.local
-          echo "TRUSTED_PROXIES=${{ secrets.TRUSTED_PROXIES }}" >> .env.local
+          echo "APP_ENV=${APP_ENV}" > .env.local
+          echo "APP_SECRET=${APP_SECRET}" >> .env.local
+          echo "DATABASE_URL=${DATABASE_URL}" >> .env.local
+          echo "JWT_PASSPHRASE=${JWT_PASSPHRASE}" >> .env.local
+          echo "JWT_PUBLIC_KEY='${JWT_PUBLIC_KEY}'" >> .env.local
+          echo "JWT_SECRET_KEY='${JWT_SECRET_KEY}'" >> .env.local
+          echo "TRUSTED_PROXIES=${TRUSTED_PROXIES}" >> .env.local
 
       - name: Copier les fichiers Symfony sur la VM
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: admin_mona
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2222
-          source: .
-          target: /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
-          strip_components: 1
-
+          host: ${{ secrets.SSH_HOST }} username: admin_mona key: /tmp/id port: 2222 source: . target: /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com strip_components: 
       - name: Lancer les commandes Symfony sur la VM
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: admin_mona
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2222
+          key: /tmp/id_rsa
+	  port: 2222
           script: |
             cd /var/www/projet-groupe.dev.local-link.mona-vanwilligen.com
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php bin/console doctrine:migrations:migrate --no-interaction
             php bin/console cache:clear
-
