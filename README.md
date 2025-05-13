@@ -48,7 +48,7 @@ L’architecture repose sur :
 - MySQL/MariaDB pour la base de données
 - Symfony CLI 
 - Reverse proxy 
-- Protection par .htaccess
+- CI/CD Git Hub Actions
 
 ## Aperçu du projet 
 

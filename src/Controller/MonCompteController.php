@@ -173,17 +173,6 @@ class MonCompteController extends AbstractController
         $photoAdded = $request->files;
         $businessName = $getall['name'];
         $busiNameFile = str_replace(' ','',$businessName);
-        
-	// Vérifier si le répertoire existe, sinon le créer
-	if (!is_dir($uploadDir)) {
-    		mkdir($uploadDir, 0775, true); // Crée les sous-répertoires si nécessaire
-	}
-	
-	// Appliquer les permissions
-	chmod($uploadDir, 0775); // S’assurer que le répertoire a les bonnes permissions
-	chown($uploadDir, 'www-data'); // Adapter selon l'utilisateur du serveur (ex. www-data)
-
-
        
 	 foreach ($photoAdded as $fileName) {
             if ($fileName) {
