@@ -6,7 +6,6 @@ on:
       - main  # Déclenchement sur un push vers la branche main
 
 env:
-  APP_ENV: ${{ secrets.APP_ENV }}
   APP_SECRET: ${{ secrets.APP_SECRET }}
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
